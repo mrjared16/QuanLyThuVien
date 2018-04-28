@@ -7,6 +7,7 @@
 #define isbn 13
 #pragma warning(disable:4996)
 
+
 struct ThongTinNguoi {
 	char HoTen[50];
 	int DoB[3]; // dd/mm/yyyy
