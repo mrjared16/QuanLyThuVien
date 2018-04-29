@@ -8,24 +8,6 @@
 #pragma warning(disable:4996)
 
 
-struct ThongTinNguoi {
-	char HoTen[50];
-	int DoB[3]; // dd/mm/yyyy
-	int CMND[9];
-	char DiaChi[200];
-	char GioiTinh[4];
-};
-typedef struct User {
-	char usr[20];
-	char pwrd[20];
-	char HoTen[50];
-	int DoB[3]; // dd/mm/yyyy
-	int CMND[9];
-	char DiaChi[200];
-	char GioiTinh[4]; // Nam/Nu
-	int Active; // 1 = activated, 0 = blocked
-	int perm; // 1 = admin, 2 = quan ly, 3 = chuyen vien, 4 = user
-};
 typedef struct TheDocGia {
 	char MaDocGia[8]; // MSSV: 7 ki tu
 	char HoTen[50];
@@ -126,21 +108,21 @@ void AddUsr(FILE *f) {
 	User New;
 	int i = 0;
 	printf("Nhap ho va ten:  ");
-	gets_s(New.HoTen);
+	gets_s(New.info.HoTen);
 	printf("Nhap ten dang nhap:  ");
 	gets_s(New.usr);
 	printf("Nhap mat khau:  ");
 	gets_s(New.pwrd);
 	printf("Nhap ngay thang nam sinh (dd/mm/yyyy):  ");
 	for (i = 0; i < 8; i++)
-		scanf("%d", &New.DoB[i]);
+		scanf("%d", &New.info.DoB[i]);
 	printf("Nhap so CMND:  ");
 	for (i = 0; i < 9; i++)
-		scanf("%d", &New.CMND[i]);
+		scanf("%d", &New.info.CMND[i]);
 	printf("Nhap dia chi:  ");
-	gets_s(New.DiaChi);
+	gets_s(New.info.DiaChi);
 	printf("Nhap gioi tinh (Nam/Nu):  ");
-	gets_s(New.GioiTinh);
+	gets_s(New.info.GioiTinh);
 	New.Active = 1;
 	while (true) {
 		printf("Nhap cap do phan quyen (2 = quan ly, 3 = chuyen vien, 4 = nguoi dung):  ");
