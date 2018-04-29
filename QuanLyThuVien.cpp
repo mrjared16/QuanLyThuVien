@@ -2,71 +2,9 @@
 //
 
 #include "stdafx.h"
-#include <stdlib.h>
-#include <string.h>
-#define isbn 13
+
 #pragma warning(disable:4996)
 
-
-typedef struct TheDocGia {
-	char MaDocGia[8]; // MSSV: 7 ki tu
-	char HoTen[50];
-	int CMND[9];
-	int DoB[8];
-	char GioiTinh[4];
-	char DiaChi[200];
-	int NgayLapThe[3];
-	int NgayHetHan[3];
-};
-typedef struct Sach {
-	int ISBN[isbn]; // en.wikipedia.org/ISBN
-	char TenSach[100];
-	char TacGia[50];
-	char NXB[50];
-	int NamXB[4];
-	char TheLoai[20];
-	int GiaSach;
-	int SoQuyenSach;
-};
-typedef struct PhieuMuonSach {
-	char MaDocGia[100];
-	int NgayMuon[3];
-	int NgayTraDK[3];
-	int NgayTraTT[3];
-	int DanhSachISBN[130];
-};
-void UserList() {
-	User admin;
-	strcpy(admin.usr, "admin");
-	strcpy(admin.pwrd, "admin");
-	admin.perm = 1;
-	admin.Active = 1;
-	FILE *f = fopen("user.txt", "wb");
-	fwrite(&admin, sizeof(User), 1, f);
-	fclose(f);
-}
-User Login(FILE *f, bool &loginsuccess) {
-	User userlogin;
-	printf("Dang nhap:\n");
-	printf("Nhap ten:  ");
-	gets_s(userlogin.usr);
-	printf("Nhap mat khau:  ");
-	gets_s(userlogin.pwrd);
-	User inputlist;
-	while (!feof(f)) {
-		loginsuccess = false;
-		fread(&inputlist, sizeof(User), 1, f);
-		if (!strcmp(inputlist.usr, userlogin.usr) && !strcmp(inputlist.pwrd, userlogin.pwrd)) {
-			loginsuccess = true;
-			break;
-		}
-	}
-	if (loginsuccess)
-		printf("Da dang nhap: %s.\n", userlogin.usr);
-	else
-		printf("Dang nhap that bai.\n");
-	return userlogin;
-}
 void DanhSachChucNang(int perm) {
 	printf("Danh sach chuc nang:\n");
 	printf("1.1 Dang nhap\n");
@@ -103,58 +41,41 @@ void DanhSachChucNang(int perm) {
 	}
 	printf("7 Thoat chuong trinh\n");
 }
-void AddUsr(FILE *f) {
-	fseek(f, 0L, SEEK_END);
-	User New;
-	int i = 0;
-	printf("Nhap ho va ten:  ");
-	gets_s(New.info.HoTen);
-	printf("Nhap ten dang nhap:  ");
-	gets_s(New.usr);
-	printf("Nhap mat khau:  ");
-	gets_s(New.pwrd);
-	printf("Nhap ngay thang nam sinh (dd/mm/yyyy):  ");
-	for (i = 0; i < 8; i++)
-		scanf("%d", &New.info.DoB[i]);
-	printf("Nhap so CMND:  ");
-	for (i = 0; i < 9; i++)
-		scanf("%d", &New.info.CMND[i]);
-	printf("Nhap dia chi:  ");
-	gets_s(New.info.DiaChi);
-	printf("Nhap gioi tinh (Nam/Nu):  ");
-	gets_s(New.info.GioiTinh);
-	New.Active = 1;
-	while (true) {
-		printf("Nhap cap do phan quyen (2 = quan ly, 3 = chuyen vien, 4 = nguoi dung):  ");
-		scanf("%d", &i);
-		if (i == 1) 
-			printf("Loi: Khong the dang ky quyen admin. Vui long nhap lai.\n");
+
+
+int main(int argc, char *arg[]) {
+
+	Authentication input;
+	bool check = false;
+
+	do {
+		if (argc == 3)
+		{
+			inputAuthentication(input, arg[1], arg[2]);
+		}
 		else {
-			New.perm = i;
-			break;
+			inputAuthentication(input);
 		}
-	}
-	fwrite(&New, sizeof(User), 1, f);
-}
-int main() {
-	//UserList();
-	FILE *f = fopen("user.txt", "r+b");
-	if (f != NULL) {
-		bool loginsuccess = false;
-		User userlogin;
-		while (!loginsuccess)
-			userlogin = Login(f, loginsuccess);
-		DanhSachChucNang(userlogin.perm);
-		char function;
-		printf("Nhap chuc nang muon su dung (1 - 7):  ");
-		scanf("%c", &function);
-		switch (function) {
-			case '7': break;
+
+		check = Login(input);
+		if (check)
+		{
+			printf("Dang nhap thanh cong.\n");
+			//do something
+			//load nguoi dung, doc gia, sach
+			/*
+			DanhSachChucNang(userlogin.perm);
+			char function;
+			printf("Nhap chuc nang muon su dung (1 - 7):  ");
+			scanf("%c", &function);
+			switch (function) {
+				case '7': break;
+			}*/
 		}
-	}
-	else {
-		printf("Khong the mo danh sach nguoi dung.\n");
-	}
-	fclose(f);
+		else {
+			printf("Dang nhap that bai. Dang nhap lai!\n\n");
+		}
+	} while (!check);
+	//save change: user, docgia, sach
 	return 0;
 }

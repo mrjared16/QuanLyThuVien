@@ -7,9 +7,13 @@
 
 #include "targetver.h"
 #include "User.h"
+#include "DocGia.h"
+#include "PhieuMuonTraSach.h"
+#include "Init.h"
 
 #include <stdio.h>
 #include <tchar.h>
+#include <string.h>
 
 
 
