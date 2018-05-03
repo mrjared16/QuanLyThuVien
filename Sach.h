@@ -14,5 +14,10 @@ typedef struct Sach {
 	char TheLoai[20];
 	int GiaSach;
 
-	int SoQuyenSach;
+	int SoLuong;
+};
+
+struct ListSach {
+	Sach list[MAX_SACH];
+	int length;
 };

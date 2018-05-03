@@ -3,11 +3,17 @@
 #include <string.h>
 
 #define isbn 13
+
 #define MAX_USER 100
-#define MAX_SACHMUON 130
+#define MAX_SACHMUON 100
+#define MAX_SACH 100
+
 #define LOGIN "resource\\user.bin"
 #define DATA_USER "resource\\user.dat"
+#define SACH "resource\\book.bin"
+
 #define MALE 1
+
 
 struct Time {
 	int ngay;
@@ -29,4 +35,4 @@ struct ThongTinNguoi {
 };
 
 
-bool inputAuthentication(Authentication &input, char *usr = NULL, char *pwrd = NULL);
+bool inputAuthentication(Authentication *input, char *usr = NULL, char *pwrd = NULL);

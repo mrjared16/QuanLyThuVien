@@ -11,12 +11,13 @@ typedef struct User {
 
 struct ListUser {
 	User list[MAX_USER];
+	int length;
 };
 //void AddUsr(FILE *f);
 
-bool Login(Authentication input);
+bool Login(Authentication *input);
 
-int id(Authentication usr_pwr) {
+int id(Authentication *usr_pwr) {
 	int i = 0;
 	return i;
 }

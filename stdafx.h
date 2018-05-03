@@ -10,6 +10,7 @@
 #include "DocGia.h"
 #include "PhieuMuonTraSach.h"
 #include "Init.h"
+#include "Sach.h"
 
 #include <stdio.h>
 #include <tchar.h>

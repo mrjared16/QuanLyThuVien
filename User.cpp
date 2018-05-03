@@ -45,7 +45,7 @@
 	fclose(f);
 }
 */
-bool Login(Authentication input){
+bool Login(Authentication *input){
 	
 	FILE *f;
 	fopen_s(&f, LOGIN, "rb");
@@ -60,8 +60,8 @@ bool Login(Authentication input){
 
 		fread_s(&read, sizeof(Authentication), sizeof(Authentication), 1, f);
 
-		if (   !strcmp(read.usr, input.usr) 
-			&& !strcmp(read.pwrd, input.pwrd)) {
+		if (   !strcmp(read.usr, input->usr) 
+			&& !strcmp(read.pwrd, input->pwrd)) {
 			return true;
 		}
 		//if (feof(f))
