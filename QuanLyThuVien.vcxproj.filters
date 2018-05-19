@@ -21,6 +21,21 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="User.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DocGia.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sach.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Init.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PhieuMuonTraSach.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -29,5 +44,19 @@
     <ClCompile Include="QuanLyThuVien.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="User.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Init.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Sach.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resource\user.bin">
+      <Filter>Resource Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
