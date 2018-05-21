@@ -10,5 +10,6 @@ typedef struct PhieuMuonSach {
 	Time NgayTraDK;
 	Time NgayTraTT;
 
+	int SoLuongSach;
 	char DanhSachISBN[MAX_SACHMUON][isbn];
 };

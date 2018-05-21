@@ -45,6 +45,74 @@
 	fclose(f);
 }
 */
+void NhapNgay(Time &date) {
+	scanf_s("%d %d %d", &date.ngay, &date.thang, &date.nam);
+}
+
+void NhapThongTinNguoi(ThongTinNguoi &t) {
+	printf("Nhap ho ten:  ");
+	scanf(" %[^\n]%*c", t.HoTen);
+	printf("Nhap ngay/thang/nam sinh:  ");
+	NhapNgay(t.DoB);
+	printf("Nhap so CMND:  ");
+	scanf(" %[^\n]%*c", t.CMND);
+	printf("Nhap dia chi:  ");
+	scanf(" %[^\n]%*c", t.DiaChi);
+	printf("Nhap gioi tinh (1 = Nam, 0 = Nu):  ");
+	scanf(" %d", &t.GioiTinh);
+}
+
+void XuatThongTinNguoi(ThongTinNguoi &t) {
+	printf("Ho ten: %s\n", t.HoTen);
+	printf("Ngay sinh: %d/%d/%d\n", t.DoB.ngay, t.DoB.thang, t.DoB.nam);
+	printf("So CMND: %s\n", t.CMND);
+	printf("Dia chi: %s\n", t.DiaChi);
+	printf("Gioi tinh: ");
+	if (t.GioiTinh) printf("Nam\n");
+	else printf("Nu\n");
+}
+
+void NhapThongTinDocGia(TheDocGia &t) {
+	printf("Nhap ma doc gia:  ");
+	scanf("%[^\n]%*c", t.MaDocGia);
+	NhapThongTinNguoi(t.info);
+	printf("Nhap ngay het han:  ");
+	NhapNgay(t.NgayHetHan);
+	printf("\n");
+}
+
+void XuatThongTinDocGia(TheDocGia &t) {
+	printf("Ma doc gia: %s\n", t.MaDocGia);
+	XuatThongTinNguoi(t.info);
+	printf("Ngay het han: %d/%d/%d", t.NgayHetHan.ngay, t.NgayHetHan.thang, t.NgayHetHan.nam);
+}
+
+void NhapThongTinNguoiDung(User &t) {
+	printf("Nhap ID:  ");
+	scanf("%d", &t.id);
+	NhapThongTinNguoi(t.info);
+	printf("Nhap trang thai (1 = active, 0 = blocked):  ");
+	scanf(" %d", &t.Active);
+	printf("Nhap quyen dieu khien (1 = admin, 2 = quan ly, 3 = chuyen vien):  ");
+	scanf(" %d", &t.perm);
+	printf("\n");
+}
+
+void XuatThongTinNguoiDung(User &t) {
+	printf("ID: %d\n", t.id);
+	XuatThongTinNguoi(t.info);
+	printf("Trang thai: ");
+	if (t.Active) printf("Active\n");
+	else printf("Blocked\n");
+	printf("Quyen dieu khien: ");
+	switch (t.perm) {
+	case 1: printf("Admin\n"); break;
+	case 2: printf("Quan ly\n"); break;
+	case 3: printf("Chuyen vien\n"); break;
+	}
+	printf("\n");
+}
+
 bool Login(Authentication *input){
 	
 	FILE *f;

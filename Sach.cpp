@@ -2,12 +2,73 @@
 #define MODE_ISBN 0
 #define MODE_TEN 1
 
+void NhapNgay(Time &date) {
+	scanf_s("%d %d %d", &date.ngay, &date.thang, &date.nam);
+}
+
+void NhapSach(Sach &t) {
+	printf("Nhap ma ISBN:  ");
+	scanf(" %[^\n]%*c", t.ISBN);
+	printf("Nhap ten sach:  ");
+	scanf(" %[^\n]%*c", t.TenSach);
+	printf("Nhap tac gia:  ");
+	scanf(" %[^\n]%*c", t.TacGia);
+	printf("Nhap NXB:  ");
+	scanf(" %[^\n]%*c", t.NXB);
+	printf("Nhap nam xuat ban:  ");
+	scanf(" %[^\n]%*c", t.NamXB);
+	printf("Nhap the loai:  ");
+	scanf(" %[^\n]%*c", t.TheLoai);
+	printf("Nhap gia sach:  ");
+	scanf(" %d", &t.GiaSach);
+	printf("Nhap so luong:  ");
+	scanf(" %d", &t.SoLuong);
+}
+
+void XuatSach(Sach &t) {
+	printf("Ma ISBN: %s", t.ISBN);
+	printf("Ten sach: %s", t.TenSach);
+	printf("Tac gia: %s", t.TacGia);
+	printf("NXB: %s", t.NXB);
+	printf("Nam xuat ban: %s", t.NamXB);
+	printf("The loai: %s", t.TheLoai);
+	printf("Gia sach: %d", t.GiaSach);
+	printf("So luong: %d", t.SoLuong);
+}
+
 void danhSachSach(ListSach *l_sach)
 {
 	for (int i = 0; i < l_sach->length; i++)
 	{
 		printf("%d. %s\n", i + 1, l_sach->list[i].TenSach);
 	}
+}
+
+void NhapPhieuMuonSach(PhieuMuonSach &t) {
+	printf("Nhap ma doc gia:  ");
+	scanf(" %[^\n]%*c", t.MaDocGia);
+	printf("Nhap ngay muon:  ");
+	NhapNgay(t.NgayMuon);
+	printf("Nhap ngay tra du kien:  ");
+	NhapNgay(t.NgayTraDK);
+	printf("Nhap ngay tra thuc te:  ");
+	NhapNgay(t.NgayTraTT);
+	printf("Nhap so sach muon:  ");
+	scanf(" %d", &t.SoLuongSach);
+	printf("Nhap ma ISBN cac sach muon muon:\n");
+	for (int i = 0; i < t.SoLuongSach; i++)
+		scanf(" %[^\n]%*c", &t.DanhSachISBN[i]);
+}
+
+void XuatPhieuMuonSach(PhieuMuonSach &t) {
+	printf("Ma doc gia: %s\n", t.MaDocGia);
+	printf("Ngay muon: %d/%d/%d\n", t.NgayMuon.ngay, t.NgayMuon.thang, t.NgayMuon.nam);
+	printf("Ngay tra du kien: %d/%d/%d\n", t.NgayTraDK.ngay, t.NgayTraDK.thang, t.NgayTraDK.nam);
+	printf("Ngay tra thuc te: %d/%d/%d\n", t.NgayTraTT.ngay, t.NgayTraTT.thang, t.NgayTraTT.nam);
+	printf("Ma ISBN cac sach muon muon:\n");
+	int i = 0;
+	for (int i = 0; i < t.SoLuongSach; i++)
+		printf("%s\n", &t.DanhSachISBN[i]);
 }
 
 // tim kiem
