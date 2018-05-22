@@ -96,3 +96,46 @@ bool inputAuthentication(Authentication *input, char *usr, char *pwrd)
 	printf("7 Thoat chuong trinh\n");
 }
 */
+
+bool NamNhuan(int &t) {
+	if (t % 400 == 0) {
+		return true;
+	}
+	else if (t % 100 == 0) {
+		return false;
+	}
+	else if (t % 4 == 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+int KhoangCach2Time(Time &a, Time &b) {
+	int dif = 0;
+	int NgayTrongThang[12] = { 31,28,31,30,31,30,31,31,30,31,30,31 };
+	dif += NgayTrongThang[a.thang - 1] - a.ngay + 1;
+	dif += b.ngay;
+	if (a.nam == b.nam) {
+		if (NamNhuan(a.nam))
+			NgayTrongThang[1]++;
+		for (int i = a.thang; i < b.thang - 1; i++)
+			dif += NgayTrongThang[i];
+	}
+	else {
+		int yr_dif = b.nam - a.nam;
+		for (int i = a.nam + 1; i <= b.nam; i++) {
+			if (NamNhuan(i))
+				dif += 366;
+			else dif += 365;
+		}
+		a.nam = b.nam;
+		if (NamNhuan(a.nam))
+			NgayTrongThang[1]++;
+		for (int i = a.thang; i < b.thang - 1; i++)
+			dif += NgayTrongThang[i];
+	}
+	printf("So ngay chenh lenh: %d", dif);
+	return dif;
+}

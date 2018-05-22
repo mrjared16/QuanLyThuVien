@@ -123,3 +123,33 @@ bool themSach(ListSach *l_sach, Sach *sach)
 	return true;
 }
 
+int ThongKeSach() {
+	int N = 0;
+	Sach s;
+	FILE *f = fopen("book.bin", "rb");
+	while (!feof(f)) {
+		fread(&s, sizeof(Sach), 1, f);
+		if (feof(f)) break;
+		N += s.SoLuong;
+	}
+	printf("So luong sach: %ld\n", N);
+	return N;
+}
+
+int ThongKeSach_TheLoai() {
+	printf("Nhap the loai muon tim kiem:  ");
+	char tl[20];
+	scanf(" %[^\n]%*c", tl);
+	int num = 0;
+	Sach s;
+	FILE *f = fopen("book.bin", "rb");
+	while (!feof(f)) {
+		fread(&s, sizeof(Sach), 1, f);
+		if (feof(f)) break;
+		if (!strcmp(tl, s.TheLoai))
+			num += s.SoLuong;
+	}
+	fclose(f);
+	printf("So luong sach theo the loai '%s' la  %d", tl, num);
+	return num;
+}

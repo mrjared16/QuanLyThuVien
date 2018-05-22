@@ -98,6 +98,38 @@ void NhapThongTinNguoiDung(User &t) {
 	printf("\n");
 }
 
+long ThongKeDocGia() {
+	FILE *f = fopen("docgia.bin", "rb");
+	fseek(f, 0L, SEEK_END);
+	long eof = ftell(f);
+	fclose(f);
+	long N = eof / sizeof(TheDocGia);
+	printf("So luong doc gia: %ld\n", N);
+	return N;
+}
+
+int ThongKeDocGia_GioiTinh() {
+	printf("Nhap gioi tinh can tim (1 = Nam, 0 = Nu):  ");
+	int gt;
+	scanf(" %d", &gt);
+	int num = 0;
+	TheDocGia dg;
+	FILE *f = fopen("docgia.bin", "rb");
+	while (!feof(f)) {
+		fread(&dg, sizeof(TheDocGia), 1, f);
+		if (feof(f)) break;
+		if (gt == dg.info.GioiTinh) {
+			num++;
+		}
+	}
+	fclose(f);
+	printf("So luong doc gia ");
+	if (gt == 1) printf("Nam:  ");
+	else printf("Nu:  ");
+	printf("%d\n", num);
+	return num;
+}
+
 void XuatThongTinNguoiDung(User &t) {
 	printf("ID: %d\n", t.id);
 	XuatThongTinNguoi(t.info);
