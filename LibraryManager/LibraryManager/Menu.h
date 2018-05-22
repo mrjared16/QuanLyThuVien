@@ -5,52 +5,54 @@
 #include <string.h>
 #include "Init.h"
 #include "User.h"
+#include "DocGia.h"
+#include "Sach.h"
 
-#define NUMBER_OF_MENUS 30
+#define NUMBER_OF_MENUS 34
 
 #define MAX_NODE 10
 
 void show(Menu *menu);
 
 
-//chinh sua nho thay doi so luong NUMBER_OF_MENUS
+//******NOTE****** : Chinh sua SO LUONG menu => nho thay doi so luong NUMBER_OF_MENUS
 DataMenu data[NUMBER_OF_MENUS] =
 {
 	{ "", "", NULL, MEMBER },
 	{ "Chuc nang user"		, "", NULL, MEMBER },
+		{ "Cap nhat thong tin ca nhan"	, "Chuc nang user", showInformation, MEMBER },
+			{ "Thay doi ho ten"		, "Cap nhat thong tin ca nhan", changeName, MEMBER },
+			{ "Thay doi ngay sinh"	, "Cap nhat thong tin ca nhan", changeDayofBirth, MEMBER },
+			{ "Thay doi CMND"		, "Cap nhat thong tin ca nhan", changeIdentityCardNumber, MEMBER },
+			{ "Thay doi dia chi"	, "Cap nhat thong tin ca nhan", changeAddress, MEMBER },
+		{ "Thay doi mat khau"			, "Chuc nang user", changePassword, MEMBER },
+		{ "Tao nguoi dung"				, "Chuc nang user", addUser, ADMIN },
+		{ "Phan quyen nguoi dung"		, "Chuc nang user", NULL, ADMIN },
+		{ "Dang xuat"					, "Chuc nang user", logOut, MEMBER },
 	{ "Quan ly doc gia"		, "", NULL, MEMBER },
+		{ "Xem danh sach doc gia"			, "Quan ly doc gia", printAllReaders, MEMBER },
+		{ "Them doc gia"					, "Quan ly doc gia", addReader, MEMBER },
+		{ "Chinh sua thong tin doc gia"		, "Quan ly doc gia", NULL, MEMBER },
+		{ "Xoa thong tin doc gia"			, "Quan ly doc gia", NULL, MODERATOR },
+		{ "Tim kiem doc gia theo CMND"		, "Quan ly doc gia", findReaderbyIdentityCardNumber, MEMBER },
+		{ "Tim kiem doc gia theo ho ten"	, "Quan ly doc gia", findReaderbyName, MEMBER },
 	{ "Quan ly sach"		, "", NULL, MEMBER },
+		{ "Xem danh sach cac sach"		, "Quan ly sach", printAllBooks, MODERATOR },
+		{ "Them sach"					, "Quan ly sach", addBook, MODERATOR },
+		{ "Chinh sua thong tin sach"	, "Quan ly sach", NULL, MODERATOR },
+		{ "Xoa thong tin sach"			, "Quan ly sach", NULL, MODERATOR },
+		{ "Tim kiem sach theo ISBN"		, "Quan ly sach", findBookbyISBN, MEMBER },
+		{ "Tim kiem sach theo ten sach"	, "Quan ly sach", findBookbyName, MEMBER },
+
 	{ "Lap phieu muon sach"	, "", NULL, MEMBER },
 	{ "Lap phieu tra sach"	, "", NULL, MEMBER },
 	{ "Chuc nang thong ke"	, "", NULL, MEMBER },
-
-	{ "Cap nhat thong tin ca nhan"	, "Chuc nang user", NULL, MEMBER },
-	{ "Thay doi mat khau"			, "Chuc nang user", NULL, MEMBER },
-	{ "Tao nguoi dung"				, "Chuc nang user", NULL, ADMIN },
-	{ "Phan quyen nguoi dung"		, "Chuc nang user", NULL, ADMIN },
-	{ "Dang xuat"					, "Chuc nang user", logOut, MEMBER },
-
-	{ "Xem danh sach doc gia"			, "Quan ly doc gia", NULL, MEMBER },
-	{ "Them doc gia"					, "Quan ly doc gia", NULL, MEMBER },
-	{ "Chinh sua thong tin doc gia"		, "Quan ly doc gia", NULL, MEMBER },
-	{ "Xoa thong tin doc gia"			, "Quan ly doc gia", NULL, MODERATOR },
-	{ "Tim kiem doc gia theo CMND"		, "Quan ly doc gia", NULL, MEMBER },
-	{ "Tim kiem doc gia theo ho ten"	, "Quan ly doc gia", NULL, MEMBER },
-
-
-	{ "Xem danh sach cac sach"		, "Quan ly sach", NULL, MODERATOR },
-	{ "Them sach"					, "Quan ly sach", NULL, MODERATOR },
-	{ "Chinh sua thong tin sach"	, "Quan ly sach", NULL, MODERATOR },
-	{ "Xoa thong tin sach"			, "Quan ly sach", NULL, MODERATOR },
-	{ "Tim kiem sach theo ISBN"		, "Quan ly sach", NULL, MEMBER },
-	{ "Tim kiem sach theo ten sach"	, "Quan ly sach", NULL, MEMBER },
-
-	{ "So luong sach trong thu vien"	, "Chuc nang thong ke", NULL, MEMBER },
-	{ "So luong sach theo the loai "	, "Chuc nang thong ke", NULL, MEMBER },
-	{ "So luong doc gia"				, "Chuc nang thong ke", NULL, MEMBER },
-	{ "So luong doc gia theo gioi tinh"	, "Chuc nang thong ke", NULL, MEMBER },
-	{ "So luong sach dang duoc muon"	, "Chuc nang thong ke", NULL, MEMBER },
-	{ "Danh sach doc gia bi tre han"	, "Chuc nang thong ke", NULL, MEMBER },
+		{ "So luong sach trong thu vien"	, "Chuc nang thong ke", NULL, MEMBER },
+		{ "So luong sach theo the loai "	, "Chuc nang thong ke", NULL, MEMBER },
+		{ "So luong doc gia"				, "Chuc nang thong ke", NULL, MEMBER },
+		{ "So luong doc gia theo gioi tinh"	, "Chuc nang thong ke", NULL, MEMBER },
+		{ "So luong sach dang duoc muon"	, "Chuc nang thong ke", NULL, MEMBER },
+		{ "Danh sach doc gia bi tre han"	, "Chuc nang thong ke", NULL, MEMBER },
 };
 
 //Sau khi xay dung cay menu thi chi co parent cua MainMenu = NULL
@@ -62,13 +64,16 @@ bool isMainMenu(Menu *menu)
 //Thu thi menu
 void execute(Menu *menu)
 {
+	system("cls");		//xoa man hinh
+
 	//Neu no la leaf => thuc thi
+
 	if (menu->data->enter != NULL)
 		menu->data->enter();
-	else {
+	//else {
 		//Chua phai leaf => show chuc nang
-		show(menu);
-	}
+	show(menu);
+	//}
 
 	//Khong phai main menu => add nut back
 	if (!isMainMenu(menu))
@@ -165,7 +170,7 @@ void clearInputBuffer() {
 
 void nhanPhim(Menu *menu)
 {
-	
+
 	int cmd;
 	printf("> ");
 
@@ -174,7 +179,7 @@ void nhanPhim(Menu *menu)
 		exit(0);
 		return;
 	}
-	
+
 	//moi lan chi nhan 1 cmd
 	clearInputBuffer();
 
@@ -182,27 +187,24 @@ void nhanPhim(Menu *menu)
 	switch (cmd)
 	{
 		//BACK
-		case 0:
-			menu_cmd = menu->parent;
-			break;
+	case 0:
+		menu_cmd = menu->parent;
+		break;
 
-		default:
-			menu_cmd = menu->children[cmd - 1];
-			break;
+	default:
+		menu_cmd = menu->children[cmd - 1];
+		break;
 	}
 
-	
-	system("cls");		//xoa man hinh
-
-	//dang xuat thi ko tiep tuc de quy
+	//dang xuat thi ko tiep tuc de quy nhan phim
 	if (menu_cmd->data->enter == logOut) {
+		system("cls");
 		return;
 	}
 
 	execute(menu_cmd);		//thuc thi
 	nhanPhim(menu_cmd);		//tiep tuc nhan phim
 }
-
 //Xoa cay menu = de quy tranh memory leaks
 void deleteMenus(Menu *menu)
 {

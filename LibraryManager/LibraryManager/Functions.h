@@ -4,7 +4,7 @@
 
 template <class KeyType>
 struct Record {
-	KeyType key;
+	KeyType record_key;
 	int index;
 };
 
@@ -19,7 +19,7 @@ int getNumberRecords(const char *file_name)
 	FILE *f;
 	fopen_s(&f, file_name, "r");
 	if (f == NULL)
-		return 0;
+		return FILE_NOT_FOUND;
 	int result = getFileLength(f) / sizeof(RecordType);
 	fclose(f);
 	return result;
@@ -70,7 +70,7 @@ int binarySearch(KeyType &key, int(*cmp)(KeyType &, KeyType &), const char *file
 	{
 		mid = (left + right) / 2;
 		readRecord(f, record, mid);
-		cmp_result = cmp(key, record.key);
+		cmp_result = cmp(key, record.record_key);
 
 		if (cmp_result == 0) {
 			fclose(f);
@@ -190,13 +190,44 @@ bool deleteRecord(int id, const char *file_name)
 }
 
 template <class RecordType>
-void editRecord(RecordType &new_record, int id, const char *file_name)
+bool editRecord(RecordType &new_record, int id, const char *file_name)
 {
 	FILE *f;
 	fopen_s(&f, file_name, "r+");
+	if (f == NULL)
+		return false;
 
 	fseek(f, id * sizeof(RecordType), SEEK_SET);
-	fwrite(&new_record, sizeof(RecordType), 1, f);
+
+	if (!fwrite(&new_record, sizeof(RecordType), 1, f))
+		return false;
 
 	fclose(f);
+	return true;
+}
+
+template <class RecordType>
+int printAllRecords(const char *file_name, void(*print)(RecordType &record, int index))
+{
+	int n = getNumberRecords<RecordType>(file_name);
+	if (n == FILE_NOT_FOUND || n == 0)
+	{
+		return n;
+	}
+
+	FILE *f;
+	fopen_s(&f, file_name, "r");
+
+	RecordType buffer;
+
+	//printf("Thu vien co %d doc gia:\n", n);
+	for (int i = 0; i < n; i++)
+	{
+		//printf("Doc gia thu %d: \n", i);
+		fread_s(&buffer, sizeof(RecordType), sizeof(RecordType), 1, f);
+		print(buffer, i + 1);
+	}
+
+	fclose(f);
+	return n;
 }

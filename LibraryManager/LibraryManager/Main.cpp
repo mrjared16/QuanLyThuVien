@@ -5,8 +5,10 @@
 #include "User.h"
 #include "Menu.h"
 
+//extern User login_user;
+
 int main(int argc, char *arg[]) {
-	User user;
+	//User login_user;
 	Authentication input;
 	int id_user = -1;
 	bool login_check = false;
@@ -16,22 +18,24 @@ int main(int argc, char *arg[]) {
 		if (argc == 3 && first_try)
 		{
 			//dang nhap tu cmd line
-			inputAuthentication(input, arg[1], arg[2]);
+			nhapUsernamePassword(input, arg[1], arg[2]);
 			first_try = false;
 		}
 		else {
 			//dang nhap lai tu ban phim
-			inputAuthentication(input);
+			printf("DANG NHAP\n");
+			nhapUsernamePassword(input);
 		}
 
 		login_check = checkLogin(input, id_user);
 
 		//dang nhap thanh cong
 		if (login_check)
-		{
-			getRecord(user, id_user, USER_DATA);
+		{	
+			//login_user : "Init.h"
+			getRecord(login_user, id_user, USER_DATA);
 			//getUser(id_user, user);
-			runMenu(user);
+			runMenu(login_user);
 		}
 		else {
 			printf("Dang nhap that bai. Dang nhap lai!\n\n");

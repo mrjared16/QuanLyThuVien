@@ -1,4 +1,7 @@
 #pragma once
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
 
 #define MAX_SACHMUON 100
 
@@ -22,8 +25,8 @@
 #define TEN_SACH "name_book.bin"
 
 #define DOCGIA "docgia.bin"
-#define IDCARD "IDCARD_docgia.bin"
-#define HOTEN "name_docgia.bin"
+#define IDCARD_DOCGIA "icn_docgia.bin"
+#define HOTEN_DOCGIA "name_docgia.bin"
 
 #define NOT_FOUND -1
 #define FILE_NOT_FOUND -2
@@ -35,11 +38,18 @@ struct Time {
 	int nam;
 };
 
+struct HoTen {
+	char key[50];
+};
+struct IdentityCardNumber {
+	char key[10];
+};
+
 //ten -> DoB -> CMND -> diachi -> gioi tinh
 struct ThongTinNguoi {
-	char HoTen[50];
+	HoTen Ho_Ten;
 	Time DoB;
-	char CMND[10];
+	IdentityCardNumber CMND;
 	char DiaChi[200];
 	char GioiTinh;  //1 = Nam, 0 = Nu
 };
@@ -66,15 +76,23 @@ struct TheDocGia {
 	Time NgayHetHan;
 };
 
+struct ISBN {
+	char key[isbn];
+};
+
+struct BookName {
+	char key[100];
+};
+
 //isbn -> ten -> tacgia -> NXB -> theloai -> giasach -> soluong
 struct Sach {
-	char ISBN[isbn]; // en.wikipedia.org/ISBN
+	ISBN book_ISBN;// en.wikipedia.org/ISBN
 
-	char TenSach[100];
+	BookName TenSach;
 	char TacGia[50];
 	char NXB[50];
 
-	char NamXB[4];
+	char NamXB[5];
 
 	char TheLoai[20];
 	int GiaSach;
@@ -90,7 +108,8 @@ struct PhieuMuonSach {
 	Time NgayTraTT;
 
 	int soluong_sach;
-	char DanhSachISBN[MAX_SACHMUON][isbn];
+	ISBN DanhSachISBN[MAX_SACHMUON];
+//	char DanhSachISBN[MAX_SACHMUON][isbn];
 };
 
 
@@ -114,3 +133,71 @@ struct Menu {
 struct MainMenu {
 	Menu *root;
 };
+
+
+User login_user;
+
+
+void XuatThongTinNguoi(ThongTinNguoi &t) {
+	printf("Ho ten: %s\n", t.Ho_Ten.key);
+
+	printf("Ngay sinh: %d/%d/%d\n", t.DoB.ngay, t.DoB.thang, t.DoB.nam);
+
+	printf("So CMND: %s\n", t.CMND.key);
+
+	printf("Dia chi: %s\n", t.DiaChi);
+
+	printf("Gioi tinh: ");
+	if (t.GioiTinh)
+		printf("Nam\n");
+	else
+		printf("Nu\n");
+
+}
+
+void NhapNgay(Time &date) {
+	scanf_s("%d %d %d", &date.ngay, &date.thang, &date.nam);
+	while (getchar() != '\n');
+}
+
+void nhapHoTen(ThongTinNguoi &input)
+{
+	printf("Nhap ho ten:  ");
+	gets_s(input.Ho_Ten.key);
+}
+
+void nhapNgaySinh(ThongTinNguoi &input)
+{
+	printf("Nhap ngay/thang/nam sinh:  ");
+	NhapNgay(input.DoB);
+}
+
+void nhapCMND(ThongTinNguoi &input)
+{
+	printf("Nhap so CMND:  ");
+	gets_s(input.CMND.key);
+}
+
+void nhapDiaChi(ThongTinNguoi &input)
+{
+	printf("Nhap dia chi:  ");
+	gets_s(input.DiaChi);
+}
+
+void NhapThongTinNguoi(ThongTinNguoi &t) {
+	
+	nhapHoTen(t);
+	nhapNgaySinh(t);
+	nhapCMND(t);
+	nhapDiaChi(t);
+
+	printf("Nhap gioi tinh (1 = Nam, 0 = Nu):  ");
+	scanf_s("%d", &t.GioiTinh);
+}
+
+template <class Type>
+int compareString(Type &key, Type &input)
+{
+	return strcmp(key.key, input.key);
+}
+
