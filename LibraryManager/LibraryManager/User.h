@@ -241,3 +241,46 @@ void addUser()
 	}
 
 }
+
+void setPermission() {
+	Authentication authen_record;
+
+	//login_user: "Init.h" 
+
+	printf("Nhap username can phan quyen: ");
+	gets_s(authen_record.usr);
+
+	
+	//Tim vi tri cua user
+	int search_result = binarySearch<Authentication, Record<Authentication>>(authen_record, compareUsername, AUTHEN);
+
+	printf("\n");
+	if (search_result == FILE_NOT_FOUND) {
+		printf("Khong tim thay file %s\n", AUTHEN);
+		return;
+	}
+
+	if (search_result == NOT_FOUND)
+	{
+		printf("Khong tim thay user \"%s\"\n", authen_record.usr);
+		return;
+	}
+
+	//lay record ra de doc index cua User
+	Record<Authentication> tmp;
+	getRecord(tmp, search_result, AUTHEN);
+
+	//doc record user
+	User set_permission;
+	getRecord(set_permission, tmp.index, DATA_USER);
+
+	//thay doi quyen 
+	printf("Nhap quyen (3 = admin, 2 = quan ly, 1 = chuyen vien):  ");
+	scanf_s("%d", &set_permission.permission);
+
+	//chinh sua record
+	if (editRecord(set_permission, tmp.index, AUTHEN))
+		printf("Phan quyen thanh cong!\n");
+	else
+		printf("Phan quyen that bai!\n");
+}

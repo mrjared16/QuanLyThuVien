@@ -206,6 +206,34 @@ bool editRecord(RecordType &new_record, int id, const char *file_name)
 	return true;
 }
 
+template <class RecordType, class KeyType>
+int countRecord(KeyType *key, const char *file_name, bool (*isMatch)(RecordType &record, KeyType *key))
+{
+	int n = getNumberRecords<RecordType>(file_name);
+	if (n == FILE_NOT_FOUND || n == 0)
+	{
+		return n;
+	}
+
+	FILE *f;
+	fopen_s(&f, file_name, "r");
+
+	RecordType buffer;
+
+	int count = 0;
+
+	for (int i = 0; i < n; i++)
+	{
+		fread_s(&buffer, sizeof(RecordType), sizeof(RecordType), 1, f);
+		if (isMatch(buffer, key))
+			count++;
+	}
+
+	fclose(f);
+	return count;
+}
+
+
 template <class RecordType>
 int printAllRecords(const char *file_name, void(*print)(RecordType &record, int index))
 {

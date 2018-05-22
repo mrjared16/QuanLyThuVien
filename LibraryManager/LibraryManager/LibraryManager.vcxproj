@@ -149,6 +149,7 @@
     <ClInclude Include="Menu.h" />
     <ClInclude Include="PhieuMuonTraSach.h" />
     <ClInclude Include="Sach.h" />
+    <ClInclude Include="Stats.h" />
     <ClInclude Include="User.h" />
   </ItemGroup>
   <ItemGroup>

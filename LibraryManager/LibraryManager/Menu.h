@@ -7,6 +7,7 @@
 #include "User.h"
 #include "DocGia.h"
 #include "Sach.h"
+#include "Stats.h"
 
 #define NUMBER_OF_MENUS 34
 
@@ -27,7 +28,7 @@ DataMenu data[NUMBER_OF_MENUS] =
 			{ "Thay doi dia chi"	, "Cap nhat thong tin ca nhan", changeAddress, MEMBER },
 		{ "Thay doi mat khau"			, "Chuc nang user", changePassword, MEMBER },
 		{ "Tao nguoi dung"				, "Chuc nang user", addUser, ADMIN },
-		{ "Phan quyen nguoi dung"		, "Chuc nang user", NULL, ADMIN },
+		{ "Phan quyen nguoi dung"		, "Chuc nang user", setPermission, ADMIN },
 		{ "Dang xuat"					, "Chuc nang user", logOut, MEMBER },
 	{ "Quan ly doc gia"		, "", NULL, MEMBER },
 		{ "Xem danh sach doc gia"			, "Quan ly doc gia", printAllReaders, MEMBER },
@@ -47,10 +48,10 @@ DataMenu data[NUMBER_OF_MENUS] =
 	{ "Lap phieu muon sach"	, "", NULL, MEMBER },
 	{ "Lap phieu tra sach"	, "", NULL, MEMBER },
 	{ "Chuc nang thong ke"	, "", NULL, MEMBER },
-		{ "So luong sach trong thu vien"	, "Chuc nang thong ke", NULL, MEMBER },
-		{ "So luong sach theo the loai "	, "Chuc nang thong ke", NULL, MEMBER },
-		{ "So luong doc gia"				, "Chuc nang thong ke", NULL, MEMBER },
-		{ "So luong doc gia theo gioi tinh"	, "Chuc nang thong ke", NULL, MEMBER },
+		{ "So luong sach trong thu vien"	, "Chuc nang thong ke", thongKeSach, MEMBER },
+		{ "So luong sach theo the loai "	, "Chuc nang thong ke", thongKeSachTheoTheLoai, MEMBER },
+		{ "So luong doc gia"				, "Chuc nang thong ke", thongKeDocGia, MEMBER },
+		{ "So luong doc gia theo gioi tinh"	, "Chuc nang thong ke", thongKeDocGiaTheoGioiTinh, MEMBER },
 		{ "So luong sach dang duoc muon"	, "Chuc nang thong ke", NULL, MEMBER },
 		{ "Danh sach doc gia bi tre han"	, "Chuc nang thong ke", NULL, MEMBER },
 };

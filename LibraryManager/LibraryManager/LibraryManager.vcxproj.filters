@@ -36,6 +36,9 @@
     <ClInclude Include="User.h">
       <Filter>Source Files</Filter>
     </ClInclude>
+    <ClInclude Include="Stats.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
