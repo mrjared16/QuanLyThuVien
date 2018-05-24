@@ -66,7 +66,7 @@ void findBookbyISBN()
 	printf("Nhap ISBN can tim: ");
 	gets_s(book_ISBN.key);
 
-	int search_result = binarySearch<ISBN, Record<ISBN>>(book_ISBN, compareString<ISBN>, ISBN_SACH);
+	int search_result = binarySearch<ISBN, Record<ISBN>>(book_ISBN, compareStringField<ISBN>, ISBN_SACH);
 
 	if (search_result == FILE_NOT_FOUND)
 	{
@@ -97,7 +97,7 @@ void findBookbyName()
 	printf("Nhap ten sach can tim: ");
 	gets_s(Ho_Ten.key);
 
-	int search_result = binarySearch<BookName, Record<BookName>>(Ho_Ten, compareString<BookName>, TEN_SACH);
+	int search_result = binarySearch<BookName, Record<BookName>>(Ho_Ten, compareStringField<BookName>, TEN_SACH);
 
 	if (search_result == FILE_NOT_FOUND)
 	{
@@ -132,10 +132,10 @@ void addBook()
 	int insert_ISBN_location = -1, insert_BookName_location = -1;
 
 	int search_ISBN_result = binarySearch<ISBN, Record<ISBN>>
-		(sach.book_ISBN, compareString<ISBN>, ISBN_SACH, &insert_ISBN_location);
+		(sach.book_ISBN, compareStringField<ISBN>, ISBN_SACH, &insert_ISBN_location);
 
 	int search_BookName_result = binarySearch<BookName, Record<BookName>>
-		(sach.TenSach, compareString<BookName>, TEN_SACH, &insert_BookName_location);
+		(sach.TenSach, compareStringField<BookName>, TEN_SACH, &insert_BookName_location);
 
 	if (search_ISBN_result == FILE_NOT_FOUND)
 	{

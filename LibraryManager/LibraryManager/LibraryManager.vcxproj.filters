@@ -52,5 +52,14 @@
     <None Include="user_data.bin">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="docgia.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="icn_docgia.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="name_docgia.bin">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

@@ -196,9 +196,15 @@ void NhapThongTinNguoi(ThongTinNguoi &t) {
 }
 
 template <class Type>
-int compareString(Type &key, Type &input)
+int compareStringField(Type &key, Type &input)
 {
 	return strcmp(key.key, input.key);
+}
+
+template <class Type>
+void inputStringField(Type &input)
+{
+	gets_s(input.key);
 }
 
 
