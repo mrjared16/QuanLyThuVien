@@ -5,7 +5,7 @@
 
 #define MAX_SACHMUON 100
 
-#define isbn 13
+#define isbn 14
 
 #define MALE 1
 #define FEMALE 0
