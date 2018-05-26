@@ -6,10 +6,6 @@
 #include "Functions.h"
 #include "Init.h"
 
-#define LOGIN "resource\\user.bin"
-#define DATA_USER "resource\\user.dat"
-
-
 
 
 int compareUsername(Authentication &a, Authentication &b)
@@ -272,14 +268,14 @@ void setPermission() {
 
 	//doc record user
 	User set_permission;
-	getRecord(set_permission, tmp.index, DATA_USER);
+	getRecord(set_permission, tmp.index, USER_DATA);
 
 	//thay doi quyen 
 	printf("Nhap quyen (3 = admin, 2 = quan ly, 1 = chuyen vien):  ");
 	scanf_s("%d", &set_permission.permission);
 
 	//chinh sua record
-	if (editRecord(set_permission, tmp.index, AUTHEN))
+	if (editRecord(set_permission, tmp.index, USER_DATA))
 		printf("Phan quyen thanh cong!\n");
 	else
 		printf("Phan quyen that bai!\n");

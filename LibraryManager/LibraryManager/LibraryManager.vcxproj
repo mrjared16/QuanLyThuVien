@@ -150,12 +150,16 @@
     <ClInclude Include="PhieuMuonTraSach.h" />
     <ClInclude Include="Sach.h" />
     <ClInclude Include="Stats.h" />
+    <ClInclude Include="Time.h" />
     <ClInclude Include="User.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\docgia.bin" />
+    <None Include="res\docgia_icn.bin" />
+    <None Include="res\docgia_name.bin" />
     <None Include="user.bin" />
     <None Include="user_data.bin" />
   </ItemGroup>

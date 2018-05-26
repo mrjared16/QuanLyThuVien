@@ -3,6 +3,8 @@
 #include <string.h>
 #include "Init.h"
 #include "Functions.h"
+#include "PhieuMuonTraSach.h"
+#include "Time.h"
 
 
 
@@ -92,4 +94,34 @@ void thongKeDocGiaTheoGioiTinh()
 	int result = countRecord(&gioitinh, DOCGIA, matchGioiTinh);
 
 	printf("Thu vien dang co %d doc gia %s tren tong so %d doc gia.\n", result, gioitinh == MALE ? "nam" : "nu", n);
+}
+
+void thongKeSachDangMuon() {
+	PhieuMuonTraSach t;
+	int all = getNumberRecords<Sach>(SACH);
+	int sum = 0;
+	FILE *f;
+	fopen_s(&f, "PhieuMuonSach.bin", "rb");
+	while (!feof(f)) {
+		fread(&t, sizeof(PhieuMuonTraSach), 1, f);
+		if (feof(f)) break;
+		sum += t.SoLuongSach;
+	}
+	printf("So luong sach dang duoc muon la %d tren tong so %d sach trong thu vien.\n", sum, all);
+}
+
+void thongKeTreHan() {
+	PhieuMuonTraSach t;
+	int all = getNumberRecords<TheDocGia>(DOCGIA);
+	int sum = 0;
+	Time today;
+	now(today);
+	FILE *f;
+	fopen_s(&f, "PhieuMuonSach.bin", "rb");
+	while (!feof(f)) {
+		fread(&t, sizeof(PhieuMuonTraSach), 1, f);
+		if (feof(f)) break;
+		if (KhoangCach2Time(t.NgayMuon, today) > 7) sum++;
+	}
+	printf("So doc gia dang bi tre han la %d tren tong so %d doc gia.\n", sum, all);
 }

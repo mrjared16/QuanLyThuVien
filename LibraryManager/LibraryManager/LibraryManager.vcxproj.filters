@@ -39,6 +39,9 @@
     <ClInclude Include="Stats.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -50,6 +53,15 @@
       <Filter>Source Files</Filter>
     </None>
     <None Include="user_data.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\docgia.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\docgia_icn.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\docgia_name.bin">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>

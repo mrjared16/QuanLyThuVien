@@ -1,6 +1,6 @@
 #pragma once
 #include "Init.h"
-
+#pragma warning(disable:4996)
 typedef struct PhieuMuonTraSach {
 	char MaDocGia[8];
 
@@ -9,7 +9,7 @@ typedef struct PhieuMuonTraSach {
 	Time NgayTraTT;
 
 	int SoLuongSach;
-	char DanhSachISBN[100][13];
+	char DanhSachISBN[100][isbn];
 };
 
 bool NamNhuan(int &t) {
@@ -30,8 +30,7 @@ bool NamNhuan(int &t) {
 int KhoangCach2Time(Time &a, Time &b) {
 	int dif = 0;
 	int NgayTrongThang[12] = { 31,28,31,30,31,30,31,31,30,31,30,31 };
-	dif += NgayTrongThang[a.thang - 1] - a.ngay + 1;
-	dif += b.ngay;
+	if (a.nam == b.nam && a.thang == b.thang && a.ngay == b.ngay) return 0;
 	if (a.nam == b.nam) {
 		if (NamNhuan(a.nam))
 			NgayTrongThang[1]++;
@@ -51,13 +50,19 @@ int KhoangCach2Time(Time &a, Time &b) {
 		for (int i = a.thang; i < b.thang - 1; i++)
 			dif += NgayTrongThang[i];
 	}
+	if (a.thang != b.thang) {
+		dif += NgayTrongThang[a.thang - 1] - a.ngay + 1;
+		dif += b.ngay;
+	}
+	else
+		dif = b.ngay - a.ngay;
 	//printf("So ngay chenh lenh: %d", dif);
 	return dif;
 }
 
 void NhapPhieuMuonSach(PhieuMuonTraSach &t) {
 	printf("Nhap ma doc gia:  ");
-	scanf(" %[^\n]%*c", t.MaDocGia);
+	gets_s(t.MaDocGia);
 	printf("Nhap ngay muon:  ");
 	NhapNgay(t.NgayMuon);
 	printf("Nhap ngay tra du kien:  ");
@@ -65,10 +70,10 @@ void NhapPhieuMuonSach(PhieuMuonTraSach &t) {
 	/*printf("Nhap ngay tra thuc te:  ");
 	NhapNgay(t.NgayTraTT);*/
 	printf("Nhap so sach muon:  ");
-	scanf(" %d", &t.SoLuongSach);
+	scanf_s(" %d", &t.SoLuongSach);
 	printf("Nhap ma ISBN cac sach muon muon:\n");
 	for (int i = 0; i < t.SoLuongSach; i++)
-		scanf(" %[^\n]%*c", &t.DanhSachISBN[i]);
+		scanf(" %[^\n]%*c", t.DanhSachISBN[i]);
 }
 
 void XuatPhieuMuonSach(PhieuMuonTraSach &t) {
@@ -76,16 +81,28 @@ void XuatPhieuMuonSach(PhieuMuonTraSach &t) {
 	printf("Ngay muon: %d/%d/%d\n", t.NgayMuon.ngay, t.NgayMuon.thang, t.NgayMuon.nam);
 	printf("Ngay tra du kien: %d/%d/%d\n", t.NgayTraDK.ngay, t.NgayTraDK.thang, t.NgayTraDK.nam);
 	printf("Ngay tra thuc te: %d/%d/%d\n", t.NgayTraTT.ngay, t.NgayTraTT.thang, t.NgayTraTT.nam);
-	printf("Ma ISBN cac sach muon muon:\n");
-	int i = 0;
+	printf("Ma ISBN cac sach dang muon:\n");
 	for (int i = 0; i < t.SoLuongSach; i++)
 		printf("%s\n", &t.DanhSachISBN[i]);
+}
+
+void printAllPhieuMuonSach() {
+	PhieuMuonTraSach t;
+	FILE *f;
+	fopen_s(&f, "PhieuMuonSach.bin", "rb");
+	while (!feof(f)) {
+		fread(&t, sizeof(PhieuMuonTraSach), 1, f);
+		if (feof(f)) break;
+		XuatPhieuMuonSach(t);
+	}
+	fclose(f);
 }
 
 void MuonSach() {
 	PhieuMuonTraSach t;
 	NhapPhieuMuonSach(t);
-	FILE *f = fopen("PhieuMuonSach.bin", "ab");
+	FILE *f;
+	fopen_s(&f, "PhieuMuonSach.bin", "ab");
 	fwrite(&t, sizeof(PhieuMuonTraSach), 1, f);
 	fclose(f);
 }
@@ -95,8 +112,10 @@ void TraSach() {
 	int n = 0;
 	char MDG[8];
 	printf("Nhap ma doc gia:  ");
-	scanf(" %[^\n]%*c", MDG);
-	FILE *f = fopen("PhieuMuonSach.bin", "rb");
+	gets_s(MDG);
+	FILE *f;
+	fopen_s(&f, "PhieuMuonSach.bin", "rb");
+
 	while (!feof(f)) {
 		fread(&t[n], sizeof(PhieuMuonTraSach), 1, f);
 		if (feof(f)) break;
