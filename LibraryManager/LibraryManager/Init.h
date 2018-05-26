@@ -17,16 +17,16 @@
 #define MODERATOR 2
 #define ADMIN 3
 
-#define AUTHEN "user.bin"
-#define USER_DATA "user_data.bin"
+#define AUTHEN "res/user.bin"
+#define USER_DATA "res/user_data.bin"
 
-#define SACH "book.bin"
-#define ISBN_SACH "isbn_book.bin"
-#define TEN_SACH "name_book.bin"
+#define SACH "res/book.bin"
+#define ISBN_SACH "res/book_isbn.bin"
+#define TEN_SACH "res/book_name.bin"
 
-#define DOCGIA "docgia.bin"
-#define IDCARD_DOCGIA "icn_docgia.bin"
-#define HOTEN_DOCGIA "name_docgia.bin"
+#define DOCGIA "res/docgia.bin"
+#define IDCARD_DOCGIA "res/docgia_icn.bin"
+#define HOTEN_DOCGIA "res/docgia_name.bin"
 
 #define NOT_FOUND -1
 #define FILE_NOT_FOUND -2
@@ -41,6 +41,7 @@ struct Time {
 struct HoTen {
 	char key[50];
 };
+
 struct IdentityCardNumber {
 	char key[10];
 };

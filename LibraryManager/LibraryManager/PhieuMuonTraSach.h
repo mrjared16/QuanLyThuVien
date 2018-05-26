@@ -57,7 +57,7 @@ int KhoangCach2Time(Time &a, Time &b) {
 
 void NhapPhieuMuonSach(PhieuMuonTraSach &t) {
 	printf("Nhap ma doc gia:  ");
-	scanf(" %[^\n]%*c", t.MaDocGia);
+	gets_s(t.MaDocGia);
 	printf("Nhap ngay muon:  ");
 	NhapNgay(t.NgayMuon);
 	printf("Nhap ngay tra du kien:  ");
@@ -65,10 +65,10 @@ void NhapPhieuMuonSach(PhieuMuonTraSach &t) {
 	/*printf("Nhap ngay tra thuc te:  ");
 	NhapNgay(t.NgayTraTT);*/
 	printf("Nhap so sach muon:  ");
-	scanf(" %d", &t.SoLuongSach);
+	scanf_s(" %d", &t.SoLuongSach);
 	printf("Nhap ma ISBN cac sach muon muon:\n");
 	for (int i = 0; i < t.SoLuongSach; i++)
-		scanf(" %[^\n]%*c", &t.DanhSachISBN[i]);
+		gets_s(t.DanhSachISBN[i]);
 }
 
 void XuatPhieuMuonSach(PhieuMuonTraSach &t) {
@@ -85,7 +85,8 @@ void XuatPhieuMuonSach(PhieuMuonTraSach &t) {
 void MuonSach() {
 	PhieuMuonTraSach t;
 	NhapPhieuMuonSach(t);
-	FILE *f = fopen("PhieuMuonSach.bin", "ab");
+	FILE *f;
+	fopen_s(&f, "PhieuMuonSach.bin", "ab");
 	fwrite(&t, sizeof(PhieuMuonTraSach), 1, f);
 	fclose(f);
 }
@@ -95,8 +96,10 @@ void TraSach() {
 	int n = 0;
 	char MDG[8];
 	printf("Nhap ma doc gia:  ");
-	scanf(" %[^\n]%*c", MDG);
-	FILE *f = fopen("PhieuMuonSach.bin", "rb");
+	gets_s(MDG);
+	FILE *f;
+	fopen_s(&f, "PhieuMuonSach.bin", "rb");
+
 	while (!feof(f)) {
 		fread(&t[n], sizeof(PhieuMuonTraSach), 1, f);
 		if (feof(f)) break;
