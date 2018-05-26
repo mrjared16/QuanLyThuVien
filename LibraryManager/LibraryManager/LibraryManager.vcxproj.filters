@@ -45,12 +45,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="user.bin">
-      <Filter>Source Files</Filter>
-    </None>
-    <None Include="user_data.bin">
-      <Filter>Source Files</Filter>
-    </None>
-  </ItemGroup>
 </Project>

@@ -8,8 +8,9 @@
 #include "DocGia.h"
 #include "Sach.h"
 #include "Stats.h"
+#include "PhieuMuonTraSach.h"
 
-#define NUMBER_OF_MENUS 34
+#define NUMBER_OF_MENUS 41
 
 #define MAX_NODE 10
 
@@ -24,29 +25,38 @@ DataMenu data[NUMBER_OF_MENUS] =
 		{ "Cap nhat thong tin ca nhan"	, "Chuc nang user", showInformation, MEMBER },
 			{ "Thay doi ho ten"		, "Cap nhat thong tin ca nhan", changeName, MEMBER },
 			{ "Thay doi ngay sinh"	, "Cap nhat thong tin ca nhan", changeDayofBirth, MEMBER },
-			{ "Thay doi CMND"		, "Cap nhat thong tin ca nhan", changeIdentityCardNumber, MEMBER },
 			{ "Thay doi dia chi"	, "Cap nhat thong tin ca nhan", changeAddress, MEMBER },
 		{ "Thay doi mat khau"			, "Chuc nang user", changePassword, MEMBER },
 		{ "Tao nguoi dung"				, "Chuc nang user", addUser, ADMIN },
 		{ "Phan quyen nguoi dung"		, "Chuc nang user", setPermission, ADMIN },
 		{ "Dang xuat"					, "Chuc nang user", logOut, MEMBER },
+	
 	{ "Quan ly doc gia"		, "", NULL, MEMBER },
 		{ "Xem danh sach doc gia"			, "Quan ly doc gia", printAllReaders, MEMBER },
 		{ "Them doc gia"					, "Quan ly doc gia", addReader, MEMBER },
 		{ "Chinh sua thong tin doc gia"		, "Quan ly doc gia", NULL, MEMBER },
-		{ "Xoa thong tin doc gia"			, "Quan ly doc gia", NULL, MODERATOR },
-		{ "Tim kiem doc gia theo CMND"		, "Quan ly doc gia", findReaderbyIdentityCardNumber, MEMBER },
-		{ "Tim kiem doc gia theo ho ten"	, "Quan ly doc gia", findReaderbyName, MEMBER },
+			{ "Chinh sua doc gia theo CMND"		, "Chinh sua thong tin doc gia", changeReaderInfobyICN, MEMBER },
+			{ "Chinh sua doc gia theo ho ten"	, "Chinh sua thong tin doc gia", changeReaderInfobyName, MEMBER },
+		{ "Xoa doc gia"						, "Quan ly doc gia", NULL, MODERATOR },
+			{ "Xoa doc gia theo CMND"			, "Xoa doc gia", deleteReaderbyICN, MODERATOR },
+			{ "Xoa doc gia theo ho ten"			, "Xoa doc gia", deleteReaderbyName, MODERATOR },
+		{ "Tim kiem doc gia theo CMND"		, "Quan ly doc gia", searchReaderbyIdentityCardNumber, MEMBER },
+		{ "Tim kiem doc gia theo ho ten"	, "Quan ly doc gia", searchReaderbyName, MEMBER },
+	
 	{ "Quan ly sach"		, "", NULL, MEMBER },
 		{ "Xem danh sach cac sach"		, "Quan ly sach", printAllBooks, MODERATOR },
 		{ "Them sach"					, "Quan ly sach", addBook, MODERATOR },
 		{ "Chinh sua thong tin sach"	, "Quan ly sach", NULL, MODERATOR },
-		{ "Xoa thong tin sach"			, "Quan ly sach", NULL, MODERATOR },
-		{ "Tim kiem sach theo ISBN"		, "Quan ly sach", findBookbyISBN, MEMBER },
-		{ "Tim kiem sach theo ten sach"	, "Quan ly sach", findBookbyName, MEMBER },
+			{ "Chinh sua sach theo ISBN"		, "Chinh sua thong tin sach", changeBookInfobyISBN, MODERATOR },
+			{ "Chinh sua sach theo ten sach"	, "Chinh sua thong tin sach", changeBookInfobyName, MODERATOR },
+		{ "Xoa sach"					, "Quan ly sach", NULL, MODERATOR },
+			{ "Xoa sach theo ISBN"				, "Xoa sach", deleteBookbyISBN, MODERATOR },
+			{ "Xoa sach theo ten sach"			, "Xoa sach", deleteBookbyName, MODERATOR },
+		{ "Tim kiem sach theo ISBN"		, "Quan ly sach", searchBookbyISBN, MEMBER },
+		{ "Tim kiem sach theo ten sach"	, "Quan ly sach", searchBookbyName, MEMBER },
 
-	{ "Lap phieu muon sach"	, "", NULL, MEMBER },
-	{ "Lap phieu tra sach"	, "", NULL, MEMBER },
+	{ "Lap phieu muon sach"	, "", MuonSach, MEMBER },
+	{ "Lap phieu tra sach"	, "", TraSach, MEMBER },
 	{ "Chuc nang thong ke"	, "", NULL, MEMBER },
 		{ "So luong sach trong thu vien"	, "Chuc nang thong ke", thongKeSach, MEMBER },
 		{ "So luong sach theo the loai "	, "Chuc nang thong ke", thongKeSachTheoTheLoai, MEMBER },
@@ -165,9 +175,6 @@ void getMenus(MainMenu &l_menu, User &user)
 	}
 }
 
-void clearInputBuffer() {
-	while ((getchar()) != '\n');
-}
 
 void nhanPhim(Menu *menu)
 {
@@ -241,4 +248,41 @@ void runMenu(User &user)
 	execute(main_menu.root);
 	nhanPhim(main_menu.root);
 	deleteMenus(main_menu.root);
+}
+
+
+void showCustomMenu(const char *MSG, const char *label[], int n)
+{
+	printf("\n");
+	if (MSG != NULL)
+		printf("\t%s\n", MSG);
+	for (int i = 0; i < n; i++)
+	{
+		printf("%d. %s\n", i + 1, label[i]);
+	}
+}
+
+void executeCustomMenu(void(*func[])(), int n)
+{
+	int cmd;
+
+	while (1)
+	{
+		printf("\n> ");
+		if (!scanf_s("%d", &cmd) || cmd <= 0 || cmd > n)
+		{
+			clearInputBuffer();
+			printf("Cu phap khong hop le. Nhap lai!\n");
+		}
+		else
+			break;
+	}
+	clearInputBuffer();
+	func[cmd - 1]();
+}
+
+void runCustomMenu(const char *MSG, const char *label[], void(*func[])(), int n)
+{
+	showCustomMenu(MSG, label, n);
+	executeCustomMenu(func, n);
 }
