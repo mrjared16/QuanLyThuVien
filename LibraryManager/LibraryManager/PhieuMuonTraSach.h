@@ -73,7 +73,7 @@ void NhapPhieuMuonSach(PhieuMuonTraSach &t) {
 	scanf_s(" %d", &t.SoLuongSach);
 	printf("Nhap ma ISBN cac sach muon muon:\n");
 	for (int i = 0; i < t.SoLuongSach; i++)
-		scanf(" %[^\n]%*c", t.DanhSachISBN[i]);
+		gets_s(t.DanhSachISBN[i]);
 }
 
 void XuatPhieuMuonSach(PhieuMuonTraSach &t) {

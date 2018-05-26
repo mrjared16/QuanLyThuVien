@@ -13,6 +13,7 @@ int getFileLength(FILE *f) {
 	return ftell(f);
 }
 
+
 template <class RecordType>
 int getNumberRecords(const char *file_name)
 {
@@ -25,12 +26,14 @@ int getNumberRecords(const char *file_name)
 	return result;
 }
 
+
 template <class RecordType>
 void readRecord(FILE *f, RecordType &record, int id)
 {
 	fseek(f, id * sizeof(RecordType), SEEK_SET);
 	fread_s(&record, sizeof(RecordType), sizeof(RecordType), 1, f);
 }
+
 
 template <class RecordType>
 bool getRecord(RecordType &record, int id, const char *file_name)
@@ -111,6 +114,7 @@ bool addRecord(RecordType &new_record, const char *file_name)
 	return true;
 }
 
+
 template <class RecordType>
 bool insertRecord(RecordType &new_record, int insert_location, const char *file_name)
 {
@@ -149,47 +153,6 @@ bool insertRecord(RecordType &new_record, int insert_location, const char *file_
 
 
 template <class RecordType>
-bool deleteRecord(int id, const char *file_name)
-{
-	FILE *f_read, *f_tmp;
-
-	bool possible_delete = (getNumberRecords<RecordType>(file_name) > id);
-
-	fopen_s(&f_read, file_name, "r");
-	if (!possible_delete || f_read == NULL || id == -1) {
-		//printf("Xoa khong thanh cong\n");
-		if (f_read != NULL)
-			fclose(f_read);
-		return false;
-	}
-
-	fopen_s(&f_tmp, "tmp", "w");
-
-	int i = 0;
-	RecordType tmp;
-
-	while (!feof(f_read))
-	{
-		if (fread_s(&tmp, sizeof(RecordType), sizeof(RecordType), 1, f_read))
-		{
-			if (i != id)
-			{
-				fwrite(&tmp, sizeof(RecordType), 1, f_tmp);
-			}
-			i++;
-		}
-	}
-
-
-	fclose(f_read);
-	fclose(f_tmp);
-
-	remove(file_name);
-	rename("tmp", file_name);
-	return true;
-}
-
-template <class RecordType>
 bool editRecord(RecordType &new_record, int id, const char *file_name)
 {
 	FILE *f;
@@ -205,6 +168,49 @@ bool editRecord(RecordType &new_record, int id, const char *file_name)
 	fclose(f);
 	return true;
 }
+
+
+template <class RecordType>
+bool deleteRecord(RecordType &record, const char *file_name, bool (*check)(RecordType &type, RecordType &input))
+{
+	FILE *f_read, *f_tmp;
+
+//	bool possible_delete = (getNumberRecords<RecordType>(file_name) > id);
+
+	fopen_s(&f_read, file_name, "r");
+	if (//!possible_delete || 
+		f_read == NULL){ //|| id == -1) {
+		//printf("Xoa khong thanh cong\n");
+
+		return false;
+	}
+
+	fopen_s(&f_tmp, "tmp", "w");
+
+	int i = 0;
+	RecordType tmp;
+
+	while (!feof(f_read))
+	{
+		if (fread_s(&tmp, sizeof(RecordType), sizeof(RecordType), 1, f_read))
+		{
+			if (check(record, tmp))
+			{
+				continue;
+			}
+			fwrite(&tmp, sizeof(RecordType), 1, f_tmp);
+		}
+	}
+
+
+	fclose(f_read);
+	fclose(f_tmp);
+
+	remove(file_name);
+	rename("tmp", file_name);
+	return true;
+}
+
 
 template <class RecordType, class KeyType>
 int countRecord(KeyType *key, const char *file_name, bool (*isMatch)(RecordType &record, KeyType *key))
@@ -258,4 +264,69 @@ int printAllRecords(const char *file_name, void(*print)(RecordType &record, int 
 
 	fclose(f);
 	return n;
+}
+
+
+template <class Field, class Object>
+bool searchObjectbyField(Object &obj_result, const char *obj_file, Record<Field> &field_record, const char *field_file,
+	void(*printRequest)(), void(*inputField)(Field &), void(*notFoundMsg)())
+{
+	Field search_field;
+	printRequest();
+	inputField(search_field);
+	int search_result = binarySearch<Field, Record<Field>>(search_field, compareStringField<Field>, field_file);
+
+	if (search_result == FILE_NOT_FOUND)
+	{
+		printf("Khong tim thay file %s\n", field_file);
+		return false;
+	}
+
+	if (search_result == NOT_FOUND)
+	{
+		notFoundMsg();
+		return false;
+	}
+
+	getRecord(field_record, search_result, field_file);
+
+	getRecord(obj_result, field_record.index, obj_file);
+	return true;
+}
+
+
+template<class T>
+bool checkIndexFile(T &a, T&tmp)
+{
+	if (a.index == tmp.index)
+		return true;
+	if (a.index < tmp.index)
+		tmp.index--;
+	return false;
+}
+
+
+template <class Field>
+void updateField(Record<Field> &field_record, Field &obj_field, const char *field_file)
+{
+	//nothing change
+	if (compareStringField(field_record.record_key, obj_field) == 0)
+	{
+		return;
+	}
+
+	deleteRecord(field_record, field_file, checkIndexFile);
+	field_record.record_key = obj_field;
+	int insert;
+	int search_result = binarySearch<Field, Record<Field>>(obj_field, compareStringField<Field>, field_file, &insert);
+	//if ()
+	insertRecord(field_record, insert, field_file);
+}
+
+void NULLFunction() {
+
+}
+
+void clearInputBuffer() {
+	while ((getchar()) != '\n');
 }

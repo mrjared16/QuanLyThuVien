@@ -5,6 +5,63 @@
 #include "Functions.h"
 #include "Init.h"
 
+Sach sach;
+Record<BookName> book_name_record;
+Record<ISBN> isbn_record;
+
+bool book_stop = false;
+
+void book_cancel() {
+	book_stop = true;
+}
+
+extern void runCustomMenu(const char *MSG, const char *label[], void(*func[])(), int n);
+
+void changeBookName() {
+	printf("Nhap ten sach:  ");
+	gets_s(sach.TenSach.key);
+}
+
+void changeBookAuthor() {
+	printf("Nhap tac gia:  ");
+	gets_s(sach.TacGia);
+}
+
+void changeNhaXuatBan() {
+	printf("Nhap NXB:  ");
+	gets_s(sach.NXB);
+}
+
+void changeNamXB() {
+	printf("Nhap nam xuat ban:  ");
+	gets_s(sach.NamXB);
+}
+
+void changeTheLoai() {
+	printf("Nhap the loai:  ");
+	gets_s(sach.TheLoai);
+}
+
+void changeGiaSach() {
+	printf("Nhap gia sach:  ");
+	scanf_s(" %d", &sach.GiaSach);
+}
+
+void changeSoLuongSach() {
+	printf("Nhap so luong:  ");
+	scanf_s(" %d", &sach.SoLuong);
+}
+
+bool checkBookFile(Sach &a,Sach &tmp)
+{
+	if (compareStringField(a.book_ISBN, tmp.book_ISBN) == 0)
+		return true;
+
+	return false;
+}
+
+
+
 void NhapSach(Sach &t) {
 	printf("Nhap ma ISBN:  ");
 	gets_s( t.book_ISBN.key);
@@ -37,6 +94,8 @@ void XuatSach(Sach &t) {
 	
 }
 
+
+
 void printBook(Sach &reader, int stt)
 {
 	printf("%d/ ", stt);
@@ -60,66 +119,180 @@ void printAllBooks() {
 	}
 }
 
-void findBookbyISBN()
-{
-	ISBN book_ISBN;
+
+
+void searchISBNmsg() {
 	printf("Nhap ISBN can tim: ");
-	gets_s(book_ISBN.key);
-
-	int search_result = binarySearch<ISBN, Record<ISBN>>(book_ISBN, compareString<ISBN>, ISBN_SACH);
-
-	if (search_result == FILE_NOT_FOUND)
-	{
-		printf("Khong tim thay file %s\n", ISBN_SACH);
-		return;
-	}
-
-	if (search_result == NOT_FOUND)
-	{
-		printf("Khong tim thay sach!\n");
-		return;
-	}
-
-	Record<ISBN> record_result;
-	getRecord(record_result, search_result, ISBN_SACH);
-
-	Sach sach_result;
-	getRecord(sach_result, record_result.index, SACH);
-
-	printf("\nTim thay sach!\n\n");
-	XuatSach(sach_result);
 }
 
-
-void findBookbyName()
-{
-	BookName Ho_Ten;
+void searchBookNameMsg() {
 	printf("Nhap ten sach can tim: ");
-	gets_s(Ho_Ten.key);
-
-	int search_result = binarySearch<BookName, Record<BookName>>(Ho_Ten, compareString<BookName>, TEN_SACH);
-
-	if (search_result == FILE_NOT_FOUND)
-	{
-		printf("Khong tim thay file %s\n", TEN_SACH);
-		return;
-	}
-
-	if (search_result == NOT_FOUND)
-	{
-		printf("Khong tim thay sach!\n");
-		return;
-	}
-
-	Record<BookName> record_result;
-	getRecord(record_result, search_result, TEN_SACH);
-
-	Sach sach_result;
-	getRecord(sach_result, record_result.index, SACH);
-
-	printf("\nTim thay sach!\n\n");
-	XuatSach(sach_result);
 }
+
+void notFoundBookMsg() {
+	printf("Khong tim thay sach!\n");
+
+}
+
+
+
+void searchBookbyISBN()
+{
+	if (searchObjectbyField<ISBN, Sach>
+		(sach, SACH, isbn_record, ISBN_SACH, searchISBNmsg, inputStringField, notFoundBookMsg))
+	{
+		printf("\nTim thay sach!\n\n");
+		XuatSach(sach);
+	}
+}
+
+void searchBookbyName()
+{
+	if (searchObjectbyField<BookName, Sach>
+		(sach, SACH, book_name_record, TEN_SACH, searchBookNameMsg, inputStringField, notFoundBookMsg))
+	{
+		printf("\nTim thay sach!\n\n");
+		XuatSach(sach);
+	}
+}
+
+
+
+bool getBookbyISBN() {
+	if (!searchObjectbyField<ISBN, Sach>
+		(sach, SACH, isbn_record, ISBN_SACH, searchISBNmsg, inputStringField, notFoundBookMsg))
+	{
+		return false;
+	}
+
+	int search_result = binarySearch<BookName, Record<BookName>>
+		(sach.TenSach, compareStringField<BookName>, TEN_SACH);
+	if (search_result == NOT_FOUND || search_result == FILE_NOT_FOUND)
+	{
+		printf("Xay ra loi!\n");
+		return false;
+	}
+
+	getRecord(book_name_record, search_result, TEN_SACH);
+	return true;
+}
+
+bool getBookbyName()
+{
+	if (!searchObjectbyField<BookName, Sach>
+		(sach, SACH, book_name_record, TEN_SACH, searchBookNameMsg, inputStringField, notFoundBookMsg))
+	{
+		return false;
+	}
+
+	int search_result = binarySearch<ISBN, Record<ISBN>>
+		(sach.book_ISBN, compareStringField<ISBN>, ISBN_SACH);
+	if (search_result == NOT_FOUND || search_result == FILE_NOT_FOUND)
+	{
+		printf("Xay ra loi!\n");
+		return false;
+	}
+
+	getRecord(isbn_record, search_result, ISBN_SACH);
+	return true;
+}
+
+
+
+void updateBookInfo() {
+	//update
+	updateField(isbn_record, sach.book_ISBN, ISBN_SACH);
+	updateField(book_name_record, sach.TenSach, TEN_SACH);
+	editRecord(sach, book_name_record.index, SACH);
+
+}
+
+
+
+void changeBookInfo()
+{
+	system("cls");
+	XuatSach(sach);
+
+	const char *label[] = { "Thay doi ten sach", "Thay doi tac gia", "Thay doi nha xuat ban",
+		"Thay doi nam xuat ban", "Thay doi the loai", "Thay doi gia sach", "Thay doi so luong sach", "Huy chinh sua" };
+	void(*func[])() = { changeBookName, changeBookAuthor, changeNhaXuatBan,
+		changeNamXB, changeTheLoai, changeGiaSach, changeSoLuongSach, book_cancel };
+
+	runCustomMenu(NULL, label, func, 8);
+
+	updateBookInfo();
+
+	if (book_stop)
+	{
+		book_stop = false;
+		return;
+	}
+	printf("\nChinh sua thong tin thanh cong!\n\n");
+	printf("Nhan phim bat ky de tiep tuc!\n");
+
+	_getch();
+
+	changeBookInfo();
+
+}
+
+void deleteBook()
+{
+	XuatSach(sach);
+
+	const char *label[] = { "Dong y", "Huy" };
+	void(*func[])() = { NULLFunction, book_cancel };
+
+	runCustomMenu("Ban co chac chan muon xoa sach nay? \n", label, func, 2);
+
+	if (book_stop)
+	{
+		book_stop = false;
+		return;
+	}
+	//delete
+	deleteRecord(isbn_record, ISBN_SACH, checkIndexFile);
+	deleteRecord(book_name_record, TEN_SACH, checkIndexFile);
+	deleteRecord(sach, SACH, checkBookFile);
+
+	printf("Xoa thanh cong!\n");
+}
+
+
+
+void changeBookInfobyISBN() {
+
+	if (!getBookbyISBN())
+		return;
+	changeBookInfo();
+}
+
+void changeBookInfobyName() {
+
+	if (!getBookbyName())
+		return;
+
+	changeBookInfo();
+}
+
+
+
+void deleteBookbyISBN() {
+
+	if (!getBookbyISBN())
+		return;
+	deleteBook();
+}
+
+void deleteBookbyName() {
+
+	if (!getBookbyName())
+		return;
+	deleteBook();
+}
+
+
 
 void addBook()
 {
@@ -132,10 +305,10 @@ void addBook()
 	int insert_ISBN_location = -1, insert_BookName_location = -1;
 
 	int search_ISBN_result = binarySearch<ISBN, Record<ISBN>>
-		(sach.book_ISBN, compareString<ISBN>, ISBN_SACH, &insert_ISBN_location);
+		(sach.book_ISBN, compareStringField<ISBN>, ISBN_SACH, &insert_ISBN_location);
 
 	int search_BookName_result = binarySearch<BookName, Record<BookName>>
-		(sach.TenSach, compareString<BookName>, TEN_SACH, &insert_BookName_location);
+		(sach.TenSach, compareStringField<BookName>, TEN_SACH, &insert_BookName_location);
 
 	if (search_ISBN_result == FILE_NOT_FOUND)
 	{
@@ -168,3 +341,5 @@ void addBook()
 	else
 		printf("Them sach that bai!\n");
 }
+
+
