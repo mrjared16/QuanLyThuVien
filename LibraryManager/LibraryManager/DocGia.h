@@ -11,15 +11,15 @@ Record<HoTen> name_record;
 Record<IdentityCardNumber> icn_record;
 Record<ReaderID> id_record;
 
-bool reader_stop = false;
+bool reader_cancel = false;	 //huy chinh sua/ xoa doc gia
 
-void reader_cancel() {
-	reader_stop = true;
+void reader_cancelfunction() {
+	reader_cancel = true;
 }
 
 extern void runCustomMenu(const char *MSG, const char *label[], void(*func[])(), int n);
 
-
+//Kiem tra 2 doc gia giong nhau
 bool checkReaderFile(TheDocGia &a, TheDocGia &tmp)
 {
 	if (compareStringField(a.info.CMND, tmp.info.CMND) == 0)
@@ -58,6 +58,7 @@ void NhapThongTinDocGia(TheDocGia &t) {
 	printf("Nhap ngay dang ky:  ");
 	NhapNgay(t.NgayDangKy);
 	addNDay(t.NgayDangKy, READER_EXPDATE, t.NgayHetHan);
+
 }
 
 void XuatThongTinDocGia(TheDocGia &t) {
@@ -66,7 +67,7 @@ void XuatThongTinDocGia(TheDocGia &t) {
 
 	printf("Ngay dang ky: %d/%d/%d\n", t.NgayDangKy.ngay, t.NgayDangKy.thang, t.NgayDangKy.nam);
 
-//	printf("Ngay het han: %d/%d/%d\n", t.NgayHetHan.ngay, t.NgayHetHan.thang, t.NgayHetHan.nam);
+	//printf("Ngay het han: %d/%d/%d\n", t.NgayHetHan.ngay, t.NgayHetHan.thang, t.NgayHetHan.nam);
 }
 
 
@@ -77,6 +78,7 @@ void printReader(TheDocGia &reader, int stt)
 	printf("\n");
 }
 
+//Ham xuat tat ca doc gia
 void printAllReaders() {
 	
 	int result = printAllRecords<TheDocGia>(DOCGIA, printReader);
@@ -128,7 +130,7 @@ void searchReaderbyName()
 	}
 }
 
-
+//Ham lay gia tri cho 'docgia', 'name_record', 'id_record' tu CMND
 bool getReaderbyICN() {
 	if (!searchObjectbyField<IdentityCardNumber, TheDocGia>
 		(docgia, DOCGIA, icn_record, IDCARD_DOCGIA, searchICNmsg, inputStringField, notFoundReaderMsg))
@@ -136,6 +138,7 @@ bool getReaderbyICN() {
 		return false;
 	}
 
+	//tim vi tri cua HoTen
 	int search_result = binarySearch<HoTen, Record<HoTen>>
 		(docgia.info.Ho_Ten, compareStringField<HoTen>, HOTEN_DOCGIA);
 	if (search_result == NOT_FOUND || search_result == FILE_NOT_FOUND)
@@ -144,8 +147,11 @@ bool getReaderbyICN() {
 		return false;
 	}
 
+	//ghi vao name_record
 	getRecord(name_record, search_result, HOTEN_DOCGIA);
 
+
+	//tim vi tri cua MA DOC GIA
 	search_result = binarySearch<ReaderID, Record<ReaderID>>
 		(docgia.MaDocGia, compareStringField<ReaderID>, ID_DOCGIA);
 	if (search_result == NOT_FOUND || search_result == FILE_NOT_FOUND)
@@ -154,10 +160,14 @@ bool getReaderbyICN() {
 		return false;
 	}
 
+	//ghi vao id_record
 	getRecord(id_record, search_result, ID_DOCGIA);
+
 	return true;
 }
 
+
+//Ham lay gia tri cho 'docgia', 'icn_record', 'id_record' tu ten doc gia
 bool getReaderbyName()
 {
 	if (!searchObjectbyField<HoTen, TheDocGia>
@@ -166,6 +176,7 @@ bool getReaderbyName()
 		return false;
 	}
 
+	//tim vi tri cua CMND
 	int search_result = binarySearch<IdentityCardNumber, Record<IdentityCardNumber>>
 		(docgia.info.CMND, compareStringField<IdentityCardNumber>, IDCARD_DOCGIA);
 	if (search_result == NOT_FOUND || search_result == FILE_NOT_FOUND)
@@ -174,8 +185,10 @@ bool getReaderbyName()
 		return false;
 	}
 
+	//ghi vao icn_record
 	getRecord(icn_record, search_result, IDCARD_DOCGIA);
 
+	//tim vi tri cua MA DOC GIA
 	search_result = binarySearch<ReaderID, Record<ReaderID>>
 		(docgia.MaDocGia, compareStringField<ReaderID>, ID_DOCGIA);
 	if (search_result == NOT_FOUND || search_result == FILE_NOT_FOUND)
@@ -184,12 +197,14 @@ bool getReaderbyName()
 		return false;
 	}
 
+	//ghi vao id_record
 	getRecord(id_record, search_result, ID_DOCGIA);
 	
 	return true;
 }
 
 
+//cap nhat thong tin doc gia
 void updateReaderInfo() {
 	//update
 	updateField(icn_record, docgia.info.CMND, IDCARD_DOCGIA);
@@ -200,21 +215,22 @@ void updateReaderInfo() {
 }
 
 
+//Ham hien thi menu chinh sua doc gia
 void changeReaderInfo()
 {
 	system("cls");
 	XuatThongTinDocGia(docgia);
 
 	const char *label[] = { "Thay doi ma doc gia", "Thay doi ho ten", "Thay doi ngay sinh", "Thay doi dia chi", "Huy chinh sua"};
-	void(*func[])() = { changeReaderID, changeReaderName, changeReaderDoB, changeReaderAddress, reader_cancel };
+	void(*func[])() = { changeReaderID, changeReaderName, changeReaderDoB, changeReaderAddress, reader_cancelfunction };
 
 	runCustomMenu(NULL, label, func, 5);
 	
 	updateReaderInfo();
 
-	if (reader_stop)
+	if (reader_cancel)
 	{
-		reader_stop = false;
+		reader_cancel = false;
 		return;
 	}
 	printf("\nChinh sua thong tin thanh cong!\n\n");
@@ -226,6 +242,7 @@ void changeReaderInfo()
 
 }
 
+//Xoa doc gia
 void deleteReaderRecord() {
 	deleteRecord(icn_record, IDCARD_DOCGIA, checkIndexFile);
 	deleteRecord(name_record, HOTEN_DOCGIA, checkIndexFile);
@@ -233,18 +250,19 @@ void deleteReaderRecord() {
 	deleteRecord(docgia, DOCGIA, checkReaderFile);
 }
 
+
 void deleteReader()
 {
 	XuatThongTinDocGia(docgia);
 
 	const char *label[] = { "Dong y", "Huy" };
-	void(*func[])() = { NULLFunction, reader_cancel };
+	void(*func[])() = { NULLFunction, reader_cancelfunction };
 
 	runCustomMenu("Ban co chac chan muon xoa doc gia nay? \n", label, func, 2);
 
-	if (reader_stop)
+	if (reader_cancel)
 	{
-		reader_stop = false;
+		reader_cancel = false;
 		return;
 	}
 	//delete
@@ -285,6 +303,7 @@ void deleteReaderbyName() {
 }
 
 
+//Ham them doc gia
 void addReader()
 {
 	int index = getNumberRecords<TheDocGia>(DOCGIA);

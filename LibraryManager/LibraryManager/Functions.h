@@ -1,19 +1,24 @@
 #pragma once
 
+//** NHUNG HAM MAU HO TRO DOC GHI FILE VA MOT SO HAM SU DUNG CHUNG KHAC **
+//** LUU Y: DO 1 STRUCT CO DO LON KHONG DOI NEN MOI SU DUNG DUOC
+
 #include <stdio.h>
 
+//Kieu du lieu gom 1 khoa chua gia tri, 1 khoa chua vi tri
+//Dung de tim kiem du lieu nhanh: 
+//- File chua kieu Record dc sap xep => su dung binarysearch
+//- Tim dc xong tu index lay ra kieu du lieu can tim
 template <class KeyType>
 struct Record {
 	KeyType record_key;
 	int index;
 };
 
-int getFileLength(FILE *f) {
-	fseek(f, 0L, SEEK_END);
-	return ftell(f);
-}
 
 
+//Ham tra ve so luong cua 1 kieu du lieu tu file cho truoc
+//file_name: ten file chua kieu du lieu can dem
 template <class RecordType>
 int getNumberRecords(const char *file_name)
 {
@@ -27,6 +32,34 @@ int getNumberRecords(const char *file_name)
 }
 
 
+//Ham so sanh cac khoa' tim kiem
+template <class Type>
+int compareStringField(Type &key, Type &input)
+{
+	return strcmp(key.key, input.key);
+}
+
+//ham nhap khoa' tim kiem
+template <class Type>
+void inputStringField(Type &input)
+{
+	gets_s(input.key);
+}
+
+
+
+//Tra ve do dai cua file, ham ho tro cho binarysearch:
+//Do thay doi f gay anh huong den viec doc ghi
+//binarysearch su dung random access nen khong can quan tam
+int getFileLength(FILE *f) {
+	fseek(f, 0L, SEEK_END);	//di ve cuoi file
+	return ftell(f);		//tra ve vi tri cua no => do dai file tinh bang byte
+}
+
+
+
+//Ham ghi 'record' tu stream f o vi tri 'id'
+//Ho tro "random access" cho ham binarysearch
 template <class RecordType>
 void readRecord(FILE *f, RecordType &record, int id)
 {
@@ -35,25 +68,12 @@ void readRecord(FILE *f, RecordType &record, int id)
 }
 
 
-template <class RecordType>
-bool getRecord(RecordType &record, int id, const char *file_name)
-{
-	FILE *f;
-	fopen_s(&f, file_name, "r");
-	if (f == NULL)
-		return false;
-	fseek(f, id * sizeof(RecordType), SEEK_SET);
-	if (!fread_s(&record, sizeof(RecordType), sizeof(RecordType), 1, f))
-	{
-		fclose(f);
-		return false;
-	}
-	fclose(f);
-	return true;
-}
-
-
-//Tra ve thu tu trong record neu tim thay, NOT_FOUND = -1 neu ko tim thay
+//Ham tim kiem gia tri 'key' tu file 'file_name'
+//con tro ham 'cmp': ham so sanh 2 gia tri kieu du lieu cua 'key'
+//'insert_location': su dung khi ham binarysearch dc dung de tim vi tri 
+//					de insert theo thu tu vao 1 file da sap xep
+//Ham tra ve thu tu cua gia tri can tim
+//NOT_FOUND => ko tim thay, FILE_NOT_FOUND => ko doc duoc file
 template <class KeyType, class RecordType>
 int binarySearch(KeyType &key, int(*cmp)(KeyType &, KeyType &), const char *file_name, int *insert_location = NULL)
 {
@@ -65,22 +85,25 @@ int binarySearch(KeyType &key, int(*cmp)(KeyType &, KeyType &), const char *file
 		//printf("Khong tim thay file %s\n", file_name);
 		return FILE_NOT_FOUND;
 	}
-	RecordType record;
+	RecordType record;	//bien tam de doc cac record
 
 	int left = 0, right = getFileLength(f) / sizeof(RecordType) - 1;
 	int mid;
-	int cmp_result;
+
+	int cmp_result;	//ket qua tim kiem: < 0 neu a < b, = 0 neu a = b, > 0 neu a > b
 
 	while (left <= right)
 	{
 		mid = (left + right) / 2;
-		readRecord(f, record, mid);
+		readRecord(f, record, mid);		//record = a[(left+right) / 2]
+
 		cmp_result = cmp(key, record.record_key);
 
-		if (cmp_result == 0) {
+		if (cmp_result == 0) {		//key = record
 			fclose(f);
-			return mid;
+			return mid;				// => mid la gia tri can tim
 		}
+
 		//record nam ben trai mid
 		if (cmp_result < 0)
 		{
@@ -91,14 +114,37 @@ int binarySearch(KeyType &key, int(*cmp)(KeyType &, KeyType &), const char *file
 		}
 	}
 
+	//neu tim vi tri chen thi luu vi tri chen
 	if (insert_location != NULL)
 		*insert_location = left;
 
 	fclose(f);
-	return NOT_FOUND;
+	return NOT_FOUND;	//ko tim thay
 }
 
 
+
+//Ham doc gia tri record o vi tri 'id' trong file 'file_name'
+template <class RecordType>
+bool getRecord(RecordType &record, int id, const char *file_name)
+{
+	FILE *f;
+	fopen_s(&f, file_name, "r");
+	if (f == NULL)
+		return false;
+	fseek(f, id * sizeof(RecordType), SEEK_SET);	//di den vi tri can doc
+	if (!fread_s(&record, sizeof(RecordType), sizeof(RecordType), 1, f))	
+	{
+		fclose(f);
+		return false;	//doc ko thanh cong
+	}
+	fclose(f);
+	return true;
+}
+
+
+//Them record vao file 'file_name'
+//su dung mode append nen them vao cuoi
 template <class RecordType>
 bool addRecord(RecordType &new_record, const char *file_name)
 {
@@ -117,6 +163,9 @@ bool addRecord(RecordType &new_record, const char *file_name)
 }
 
 
+//Ham chen record moi vao vi tri 'insert_location' vao file 'file_name'
+//Thuc chat la copy du lieu tu file goc sang file moi,
+//den vi tri can chen thi them vao. Sau do khi de file cu
 template <class RecordType>
 bool insertRecord(RecordType &new_record, int insert_location, const char *file_name)
 {
@@ -134,13 +183,14 @@ bool insertRecord(RecordType &new_record, int insert_location, const char *file_
 
 	while (!feof(f_read))
 	{
-		if (i == insert_location)
+		if (i == insert_location)	//vi tri can ghi de
 		{
 			fwrite(&new_record, sizeof(RecordType), 1, f_tmp);
 		}
-		if (fread_s(&tmp, sizeof(RecordType), sizeof(RecordType), 1, f_read))
+
+		if (fread_s(&tmp, sizeof(RecordType), sizeof(RecordType), 1, f_read))	//doc tu file doc
 		{
-			fwrite(&tmp, sizeof(RecordType), 1, f_tmp);
+			fwrite(&tmp, sizeof(RecordType), 1, f_tmp);		// chep vao file moi
 			i++;
 		}
 	}
@@ -148,12 +198,13 @@ bool insertRecord(RecordType &new_record, int insert_location, const char *file_
 	fclose(f_read);
 	fclose(f_tmp);
 
+	//ghi de file cu
 	remove(file_name);
 	rename("tmp", file_name);
 	return true;
 }
 
-
+//Ham ghi de record tai vi tri 'id'
 template <class RecordType>
 bool editRecord(RecordType &new_record, int id, const char *file_name)
 {
@@ -176,18 +227,15 @@ bool editRecord(RecordType &new_record, int id, const char *file_name)
 }
 
 
+//Ham xoa record thoa dieu kien 'check'
+//Tuong tu ham insert
 template <class RecordType>
 bool deleteRecord(RecordType &record, const char *file_name, bool (*check)(RecordType &type, RecordType &input))
 {
 	FILE *f_read, *f_tmp;
 
-//	bool possible_delete = (getNumberRecords<RecordType>(file_name) > id);
-
 	fopen_s(&f_read, file_name, "r");
-	if (//!possible_delete || 
-		f_read == NULL){ //|| id == -1) {
-		//printf("Xoa khong thanh cong\n");
-
+	if (f_read == NULL){ 
 		return false;
 	}
 
@@ -200,7 +248,7 @@ bool deleteRecord(RecordType &record, const char *file_name, bool (*check)(Recor
 	{
 		if (fread_s(&tmp, sizeof(RecordType), sizeof(RecordType), 1, f_read))
 		{
-			if (check(record, tmp))
+			if (check(record, tmp))	//thoa man dieu kien can xoa => bo qua ko ghi vao file moi
 			{
 				continue;
 			}
@@ -217,9 +265,9 @@ bool deleteRecord(RecordType &record, const char *file_name, bool (*check)(Recor
 	return true;
 }
 
-
+//Dem record thoa man dieu kien 'check'
 template <class RecordType, class KeyType>
-int countRecord(KeyType *key, const char *file_name, bool (*isMatch)(RecordType &record, KeyType *key))
+int countRecord(KeyType *key, const char *file_name, bool (*check)(RecordType &record, KeyType *key))
 {
 	int n = getNumberRecords<RecordType>(file_name);
 	if (n == FILE_NOT_FOUND || n == 0)
@@ -237,7 +285,7 @@ int countRecord(KeyType *key, const char *file_name, bool (*isMatch)(RecordType 
 	for (int i = 0; i < n; i++)
 	{
 		fread_s(&buffer, sizeof(RecordType), sizeof(RecordType), 1, f);
-		if (isMatch(buffer, key))
+		if (check(buffer, key))
 			count++;
 	}
 
@@ -245,7 +293,35 @@ int countRecord(KeyType *key, const char *file_name, bool (*isMatch)(RecordType 
 	return count;
 }
 
+//Dem record thoa man dieu kien 'check'
+template <class RecordType>
+int countRecord(const char *file_name, bool(*check)(RecordType &record, int &count))
+{
+	int n = getNumberRecords<RecordType>(file_name);
+	if (n == FILE_NOT_FOUND || n == 0)
+	{
+		return n;
+	}
 
+	FILE *f;
+	fopen_s(&f, file_name, "r");
+
+	RecordType buffer;
+
+	int count = 0;
+
+	for (int i = 0; i < n; i++)
+	{
+		fread_s(&buffer, sizeof(RecordType), sizeof(RecordType), 1, f);
+		check(buffer, count);
+	}
+
+	fclose(f);
+	return count;
+}
+
+//Doc va in tat ca cac record, tra ve so luong record
+//print: Ham mau de in 1 record
 template <class RecordType>
 int printAllRecords(const char *file_name, void(*print)(RecordType &record, int index))
 {
@@ -260,11 +336,11 @@ int printAllRecords(const char *file_name, void(*print)(RecordType &record, int 
 
 	RecordType buffer;
 
-	//printf("Thu vien co %d doc gia:\n", n);
 	for (int i = 0; i < n; i++)
 	{
-		//printf("Doc gia thu %d: \n", i);
-		getRecord(buffer, i, file_name);//fread_s(&buffer, sizeof(RecordType), sizeof(RecordType), 1, f);
+	
+		fread_s(&buffer, sizeof(RecordType), sizeof(RecordType), 1, f);
+
 		print(buffer, i + 1);
 	}
 
@@ -324,8 +400,8 @@ int searchObjectbyField(Object &obj_result, const char *obj_file, Record<Field> 
 }
 
 
-
-
+//Ham kieu tra cac file chua kieu record
+//Khi xoa record, index cac record phia sau record bi xoa se giam di 1
 template<class T>
 bool checkIndexFile(T &a, T&tmp)
 {
@@ -336,27 +412,37 @@ bool checkIndexFile(T &a, T&tmp)
 	return false;
 }
 
-
+//Ham cap nhat 'file_name'
+//'field_record' la gia tri ban dau
+//'obj_field' la gia tri sau khi thay doi
 template <class Field>
-void updateField(Record<Field> &field_record, Field &obj_field, const char *field_file)
+void updateField(Record<Field> &field_record, Field &obj_field, const char *file_name)
 {
 	//nothing change
-	if (compareStringField(field_record.record_key, obj_field) == 0)
+	if (compareStringField(field_record.record_key, obj_field) == 0)	//ko thay doi
 	{
 		return;
 	}
+	
 
-	deleteRecord(field_record, field_file, checkIndexFile);
-	field_record.record_key = obj_field;
+	deleteRecord(field_record, file_name, checkIndexFile);	//xoa gia tri cu
+
+	field_record.record_key = obj_field;	//gan gia tri moi
+
 	int insert;
-	int search_result = binarySearch<Field, Record<Field>>(obj_field, compareStringField<Field>, field_file, &insert);
-	insertRecord(field_record, insert, field_file);
+	int search_result = binarySearch<Field, Record<Field>>(obj_field, compareStringField<Field>, file_name, &insert);
+
+	insertRecord(field_record, insert, file_name);	//them gia tri moi vao vi tri thich hop
 }
 
+//Ham rong
 void NULLFunction() {
 
 }
 
+//Ham xoa buffer input
+//tranh loi khi nhap xuat so va chuoi
 void clearInputBuffer() {
 	while ((getchar()) != '\n');
 }
+

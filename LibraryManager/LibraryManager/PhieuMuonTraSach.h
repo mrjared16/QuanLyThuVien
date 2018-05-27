@@ -11,7 +11,7 @@ void XuatPhieuMuonSach(PhieuMuonSach &t) {
 	printf("Ma ISBN cac sach muon muon:\n");
 	int i = 0;
 	for (int i = 0; i < t.soluong_sach; i++)
-		printf("%d. %s\n", i + 1, &t.DanhSachISBN[i]);
+		printf("%d. %s\n", i + 1, &t.DanhSachISBN[i].key);
 }
 
 void XuatPhieuTraSach(PhieuTraSach &t) {
