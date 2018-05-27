@@ -150,10 +150,25 @@
     <ClInclude Include="PhieuMuonTraSach.h" />
     <ClInclude Include="Sach.h" />
     <ClInclude Include="Stats.h" />
+    <ClInclude Include="Time.h" />
     <ClInclude Include="User.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\book.bin" />
+    <None Include="res\book_isbn.bin" />
+    <None Include="res\book_name.bin" />
+    <None Include="res\docgia.bin" />
+    <None Include="res\docgia_icn.bin" />
+    <None Include="res\docgia_id.bin" />
+    <None Include="res\docgia_name.bin" />
+    <None Include="res\dsphieumuon.bin" />
+    <None Include="res\dsphieumuon_rid.bin" />
+    <None Include="res\dsphieutra.bin" />
+    <None Include="res\user.bin" />
+    <None Include="res\user_data.bin" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

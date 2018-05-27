@@ -39,10 +39,51 @@
     <ClInclude Include="Stats.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Time.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\user_data.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\user.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\book.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\dsphieumuon.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\dsphieumuon_rid.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\dsphieutra.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\book_isbn.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\book_name.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\docgia.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\docgia_icn.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\docgia_name.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\docgia_id.bin">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

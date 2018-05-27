@@ -44,8 +44,10 @@ bool getRecord(RecordType &record, int id, const char *file_name)
 		return false;
 	fseek(f, id * sizeof(RecordType), SEEK_SET);
 	if (!fread_s(&record, sizeof(RecordType), sizeof(RecordType), 1, f))
+	{
+		fclose(f);
 		return false;
-
+	}
 	fclose(f);
 	return true;
 }
@@ -157,14 +159,18 @@ bool editRecord(RecordType &new_record, int id, const char *file_name)
 {
 	FILE *f;
 	fopen_s(&f, file_name, "r+");
-	if (f == NULL)
+	if (f == NULL) {
+		//perror("Error");
 		return false;
+	}
 
 	fseek(f, id * sizeof(RecordType), SEEK_SET);
 
 	if (!fwrite(&new_record, sizeof(RecordType), 1, f))
+	{
+		fclose(f);
 		return false;
-
+	}
 	fclose(f);
 	return true;
 }
@@ -258,7 +264,7 @@ int printAllRecords(const char *file_name, void(*print)(RecordType &record, int 
 	for (int i = 0; i < n; i++)
 	{
 		//printf("Doc gia thu %d: \n", i);
-		fread_s(&buffer, sizeof(RecordType), sizeof(RecordType), 1, f);
+		getRecord(buffer, i, file_name);//fread_s(&buffer, sizeof(RecordType), sizeof(RecordType), 1, f);
 		print(buffer, i + 1);
 	}
 
@@ -294,6 +300,31 @@ bool searchObjectbyField(Object &obj_result, const char *obj_file, Record<Field>
 	return true;
 }
 
+template <class Field, class Object>
+int searchObjectbyField(Object &obj_result, const char *obj_file, Record<Field> field_record, const char *field_file,
+	void(*notFoundMsg)())
+{
+	int search_result = binarySearch<Field, Record<Field>>(field_record.record_key, compareStringField<Field>, field_file);
+
+	if (search_result == FILE_NOT_FOUND)
+	{
+		printf("Khong tim thay file %s\n", field_file);
+		return NOT_FOUND;
+	}
+
+	if (search_result == NOT_FOUND)
+	{
+		notFoundMsg();
+		return NOT_FOUND;
+	}
+	getRecord(field_record, search_result, field_file);
+
+	getRecord(obj_result, field_record.index, obj_file);
+	return field_record.index;
+}
+
+
+
 
 template<class T>
 bool checkIndexFile(T &a, T&tmp)
@@ -319,7 +350,6 @@ void updateField(Record<Field> &field_record, Field &obj_field, const char *fiel
 	field_record.record_key = obj_field;
 	int insert;
 	int search_result = binarySearch<Field, Record<Field>>(obj_field, compareStringField<Field>, field_file, &insert);
-	//if ()
 	insertRecord(field_record, insert, field_file);
 }
 

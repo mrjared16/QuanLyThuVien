@@ -261,3 +261,4 @@ __pycache__/
 *.pyc
 /LibraryManager/LibraryManager/admin
 /LibraryManager/LibraryManager/tmpabc
+/LibraryManager/LibraryManager/new_backup

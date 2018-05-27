@@ -34,8 +34,14 @@ int main(int argc, char *arg[]) {
 		{	
 			//login_user : "Init.h"
 			getRecord(login_user, id_user, USER_DATA);
-			//getUser(id_user, user);
-			runMenu(login_user);
+			if (login_user.Active != BLOCKED)
+				//getUser(id_user, user);
+			{
+				runMenu(login_user);
+			}
+			else {
+				printf("Tai khoan cua ban da bi khoa! Vui long dang nhap bang tai khoan khac.\n");
+			}
 		}
 		else {
 			printf("Dang nhap that bai. Dang nhap lai!\n\n");

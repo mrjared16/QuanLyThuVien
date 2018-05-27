@@ -3,19 +3,37 @@
 #include <stdio.h>
 #include <string.h>
 
-#define MAX_SACHMUON 100
+#define NOT_FOUND -1
+#define FILE_NOT_FOUND -2
 
-#define isbn 14
-
+//khai bao chung
 #define MALE 1
 #define FEMALE 0
 
 #define MAX_LABEL_LENGTH 40
 #define MSSV_LENGTH 8
 
+#define isbn 14
+
+
+//user
 #define MEMBER 1
 #define MODERATOR 2
 #define ADMIN 3
+
+#define ACTIVE 1
+#define BLOCKED 0
+
+
+//phieu muon sach
+#define READER_EXPDATE 730	//day
+
+#define MAX_SACH_MUON 5
+#define MAX_TIME_MUON 7
+
+#define PHAT_QUAHAN 5000
+#define PHAT_MATSACH 2
+
 
 #define AUTHEN "res/user.bin"
 #define USER_DATA "res/user_data.bin"
@@ -27,15 +45,26 @@
 #define DOCGIA "res/docgia.bin"
 #define IDCARD_DOCGIA "res/docgia_icn.bin"
 #define HOTEN_DOCGIA "res/docgia_name.bin"
+#define ID_DOCGIA "res/docgia_id.bin"
 
-#define NOT_FOUND -1
-#define FILE_NOT_FOUND -2
+
+#define PHIEUMUON "res/dsphieumuon.bin"
+#define PHIEUTRA "res/dsphieutra.bin"
+#define READERID_PHIEUMUON "res/dsphieumuon_rid.bin"
+
+
 
 // dd/mm/yyyy
 struct Time {
-	char ngay;
-	char thang;
+	int ngay;
+	int thang;
 	int nam;
+};
+
+//username -> password
+struct Authentication {
+	char usr[20];
+	char pwrd[20];
 };
 
 struct HoTen {
@@ -46,6 +75,19 @@ struct IdentityCardNumber {
 	char key[10];
 };
 
+struct ISBN {
+	char key[isbn];
+};
+
+struct BookName {
+	char key[100];
+};
+
+struct ReaderID {
+	char key[MSSV_LENGTH];// MSSV: 7 ki tu
+};
+
+
 //ten -> DoB -> CMND -> diachi -> gioi tinh
 struct ThongTinNguoi {
 	HoTen Ho_Ten;
@@ -55,11 +97,6 @@ struct ThongTinNguoi {
 	char GioiTinh;  //1 = Nam, 0 = Nu
 };
 
-//username -> password
-struct Authentication {
-	char usr[20];
-	char pwrd[20];
-};
 
 //id -> username -> info -> active -> permission
 struct User {
@@ -70,20 +107,17 @@ struct User {
 	int permission;
 };
 
+
 //madocgia (MSSV) -> info -> ngayhethan
 struct TheDocGia {
-	char MaDocGia[MSSV_LENGTH]; // MSSV: 7 ki tu
+	ReaderID MaDocGia;
+	
 	ThongTinNguoi info;
+	Time NgayDangKy;
 	Time NgayHetHan;
+	
 };
 
-struct ISBN {
-	char key[isbn];
-};
-
-struct BookName {
-	char key[100];
-};
 
 //isbn -> ten -> tacgia -> NXB -> theloai -> giasach -> soluong
 struct Sach {
@@ -101,19 +135,28 @@ struct Sach {
 	int SoLuong;
 };
 
+
 struct PhieuMuonSach {
-	char MaDocGia[MSSV_LENGTH];
+	ReaderID MaDocGia;
 
 	Time NgayMuon;
 	Time NgayTraDK;
-	Time NgayTraTT;
 
 	int soluong_sach;
-	ISBN DanhSachISBN[MAX_SACHMUON];
-//	char DanhSachISBN[MAX_SACHMUON][isbn];
+	ISBN DanhSachISBN[MAX_SACH_MUON];
 };
 
 
+struct PhieuTraSach {
+	PhieuMuonSach phieu_muon;
+	Time NgayTraThucTe;
+	
+	int so_sach_bimat;
+	ISBN ISBN_sach_bimat[MAX_SACH_MUON];
+	// tien phat = (ngay tre) * 5000 + sach(ISBN_sach_bi_mat[i]).giaSach (i = 0..so_sach_bimat)
+	// ngay tre = ngayTraThucTe - ngayMuon - 7
+	int tien_phat; 
+};
 
 
 
@@ -136,25 +179,9 @@ struct MainMenu {
 };
 
 
+
 User login_user;
 
-
-void XuatThongTinNguoi(ThongTinNguoi &t) {
-	printf("Ho ten: %s\n", t.Ho_Ten.key);
-
-	printf("Ngay sinh: %d/%d/%d\n", t.DoB.ngay, t.DoB.thang, t.DoB.nam);
-
-	printf("So CMND: %s\n", t.CMND.key);
-
-	printf("Dia chi: %s\n", t.DiaChi);
-
-	printf("Gioi tinh: ");
-	if (t.GioiTinh)
-		printf("Nam\n");
-	else
-		printf("Nu\n");
-
-}
 
 void NhapNgay(Time &date) {
 	scanf_s("%d %d %d", &date.ngay, &date.thang, &date.nam);
@@ -196,68 +223,33 @@ void NhapThongTinNguoi(ThongTinNguoi &t) {
 	scanf_s("%d", &t.GioiTinh);
 }
 
+void XuatThongTinNguoi(ThongTinNguoi &t) {
+	printf("Ho ten: %s\n", t.Ho_Ten.key);
+
+	printf("Ngay sinh: %d/%d/%d\n", t.DoB.ngay, t.DoB.thang, t.DoB.nam);
+
+	printf("So CMND: %s\n", t.CMND.key);
+
+	printf("Dia chi: %s\n", t.DiaChi);
+
+	printf("Gioi tinh: ");
+	if (t.GioiTinh)
+		printf("Nam\n");
+	else
+		printf("Nu\n");
+
+}
+
+
 template <class Type>
 int compareStringField(Type &key, Type &input)
 {
 	return strcmp(key.key, input.key);
 }
 
+
 template <class Type>
 void inputStringField(Type &input)
 {
 	gets_s(input.key);
 }
-
-
-/*
-bool NamNhuan(int &t) {
-	+if (t % 400 == 0) {
-		+return true;
-		+
-	}
-	+else if (t % 100 == 0) {
-		+return false;
-		+
-	}
-	+else if (t % 4 == 0) {
-		+return true;
-		+
-	}
-	+else {
-		+return false;
-		+
-	}
-	+
-}
-+
-+int KhoangCach2Time(Time &a, Time &b) {
-	+int dif = 0;
-	+int NgayTrongThang[12] = { 31,28,31,30,31,30,31,31,30,31,30,31 };
-	+dif += NgayTrongThang[a.thang - 1] - a.ngay + 1;
-	+dif += b.ngay;
-	+if (a.nam == b.nam) {
-		+if (NamNhuan(a.nam))
-			+ NgayTrongThang[1]++;
-		+for (int i = a.thang; i < b.thang - 1; i++)
-			+ dif += NgayTrongThang[i];
-		+
-	}
-	+else {
-		+int yr_dif = b.nam - a.nam;
-		+for (int i = a.nam + 1; i <= b.nam; i++) {
-			+if (NamNhuan(i))
-				+ dif += 366;
-			+else dif += 365;
-			+
-		}
-		+a.nam = b.nam;
-		+if (NamNhuan(a.nam))
-			+ NgayTrongThang[1]++;
-		+for (int i = a.thang; i < b.thang - 1; i++)
-			+ dif += NgayTrongThang[i];
-		+
-	}
-	+printf("So ngay chenh lenh: %d", dif);
-	+return dif;
-	+
-}*/
