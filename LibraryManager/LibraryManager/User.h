@@ -7,12 +7,16 @@
 #include "Init.h"
 
 
+User login_user;
 
+
+//Ham so sanh username
 int compareUsername(Authentication &a, Authentication &b)
 {
 	return strcmp(a.usr, b.usr);
 }
 
+//Ham kiem tra ten dang nhap va mat khau trung khop
 bool isMatch(Authentication &check, Authentication &user_input)
 {
 	int cmp_name = strcmp(check.usr, user_input.usr);
@@ -20,6 +24,7 @@ bool isMatch(Authentication &check, Authentication &user_input)
 	return (cmp_name == 0 && cmp_password == 0);
 }
 
+//Ham xuat thong tin user
 void XuatThongTinNguoiDung(User &t) {
 	printf("ID: %d\n", t.id);
 
@@ -50,6 +55,7 @@ void XuatThongTinNguoiDung(User &t) {
 
 }
 
+//Ham nhap thong tin nguoi dung
 void NhapThongTinNguoiDung(User &t, int id, char *username) {
 
 	t.id = id;
@@ -61,7 +67,7 @@ void NhapThongTinNguoiDung(User &t, int id, char *username) {
 	printf("Nhap trang thai (1 = active, 0 = blocked):  ");
 	scanf_s("%d", &t.Active);
 
-	printf("Nhap quyen dieu khien (3 = admin, 2 = quan ly, 1 = chuyen vien):  ");
+	printf("Nhap quyen dieu khien (%d = admin, %d = quan ly, %d = chuyen vien):  ", ADMIN, MODERATOR, MEMBER);
 	scanf_s("%d", &t.permission);
 	//printf("\n");
 }
@@ -90,10 +96,10 @@ bool nhapUsernamePassword(Authentication &input)
 }
 
 
-//Ham kiem tra dang nhap, dang nhap thanh cong tra ve id user
-//Dang nhap that bai tra ve LOGIN_FAILED
+//Ham kiem tra dang nhap, dang nhap thanh cong tra ve 'id_user'
 bool checkLogin(Authentication &input, int &id_user) {
 
+	//tim theo username
 	int search_result = binarySearch<Authentication, Record<Authentication>>(input, compareUsername, AUTHEN);
 
 	
@@ -110,28 +116,28 @@ bool checkLogin(Authentication &input, int &id_user) {
 	}
 
 	Record<Authentication> result;
-	getRecord(result, search_result, AUTHEN);
+	getRecord(result, search_result, AUTHEN);	//lay password ra de so sanh
 	
-	if (!isMatch(result.record_key, input))
+	if (!isMatch(result.record_key, input))		// sai password
 		return false;
-
-	id_user = result.index;
+	
+	id_user = result.index;	//id_user chinh la thu tu cua user
 
 	return true;
 }
 
 void changePassword()
 {
-	Authentication new_password;
+	Record<Authentication> new_record;
 
 	//login_user: "Init.h" 
 	
-	strcpy_s(new_password.usr, login_user.usr);
+	strcpy_s(new_record.record_key.usr, login_user.usr);
 	
 	//Tim vi tri cua user
-	int search_result = binarySearch<Authentication, Record<Authentication>>(new_password, compareUsername, AUTHEN);
+	int search_result = binarySearch<Authentication, Record<Authentication>>(new_record.record_key, compareUsername, AUTHEN);
 
-	Record<Authentication> new_record;
+	//lay user id
 	getRecord(new_record, search_result, AUTHEN);
 
 	//Thay doi mat khau
@@ -150,7 +156,8 @@ void logOut() {
 	//system("cls");
 }
 
-void rewriteUserInformation(User &user)
+//cap nhat user moi vao file
+void updateUserInformation(User &user)
 {
 	if (!editRecord(user, user.id, USER_DATA))
 		printf("Chinh sua that bai!\n");
@@ -158,6 +165,7 @@ void rewriteUserInformation(User &user)
 		printf("Chinh sua thanh cong!\n");
 }
 
+//hien thi thong tin user de tien chinh sua
 void showInformation()
 {
 	printf("\tTHONG TIN HIEN TAI:\n");
@@ -169,30 +177,31 @@ void showInformation()
 void changeName()
 {
 	nhapHoTen(login_user.info);
-	rewriteUserInformation(login_user);
+	updateUserInformation(login_user);
 }
 
 void changeDayofBirth()
 {
 	nhapNgaySinh(login_user.info);
-	rewriteUserInformation(login_user);
+	updateUserInformation(login_user);
 }
 
 void changeIdentityCardNumber()
 {
 	nhapCMND(login_user.info);
-	rewriteUserInformation(login_user);
+	updateUserInformation(login_user);
 }
 
 void changeAddress()
 {
 	nhapDiaChi(login_user.info);
-	rewriteUserInformation(login_user);
+	updateUserInformation(login_user);
 }
 
-
+//them user moi
 void addUser()
 {
+	//user id
 	int index = getNumberRecords<Authentication>(AUTHEN);
 
 	if (index == FILE_NOT_FOUND)
@@ -203,6 +212,7 @@ void addUser()
 
 	User user;
 	Authentication input;
+	
 
 	//nhap username, password
 	nhapUsernamePassword(input);
@@ -212,10 +222,11 @@ void addUser()
 	user_record.record_key = input;
 	user_record.index = index;
 
-
+	//vi tri de them user moi
 	int insert_location = -1;
 
-	int search_result = binarySearch<Authentication, Record<Authentication>>(input, compareUsername, AUTHEN, &insert_location);
+	int search_result = binarySearch<Authentication, Record<Authentication>>
+		(user_record.record_key, compareUsername, AUTHEN, &insert_location);
 
 	if (search_result == FILE_NOT_FOUND)
 	{
@@ -229,6 +240,7 @@ void addUser()
 		return;
 	}
 	
+	//them user va username password
 	if (insertRecord(user_record, insert_location, AUTHEN)
 		&& addRecord(user, USER_DATA))
 		printf("Them user thanh cong!\n");
@@ -262,19 +274,19 @@ void setPermission() {
 		return;
 	}
 
-	//lay record ra de doc index cua User
+	//lay record ra de doc id cua User
 	Record<Authentication> tmp;
 	getRecord(tmp, search_result, AUTHEN);
 
-	//doc record user
+	//doc thong tin user
 	User set_permission;
 	getRecord(set_permission, tmp.index, USER_DATA);
 
 	//thay doi quyen 
-	printf("Nhap quyen (3 = admin, 2 = quan ly, 1 = chuyen vien):  ");
+	printf("Nhap quyen dieu khien (%d = admin, %d = quan ly, %d = chuyen vien):  ", ADMIN, MODERATOR, MEMBER);
 	scanf_s("%d", &set_permission.permission);
 
-	//chinh sua record
+	//chinh sua thong tin user
 	if (editRecord(set_permission, tmp.index, USER_DATA))
 		printf("Phan quyen thanh cong!\n");
 	else

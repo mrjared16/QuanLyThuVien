@@ -5,16 +5,16 @@
 #include "User.h"
 #include "Menu.h"
 
-//extern User login_user;
 
 int main(int argc, char *arg[]) {
-	//User login_user;
+	
 	Authentication input;
 	int id_user = -1;
 	bool login_check = false;
-	bool first_try = true;
+	bool first_try = true;	//kiem tra lan nhap dau, chi lan nhap dau moi co the nhap tu cmd line
 
 	do {
+		//lay username password tu cmd line hoac do nguio dung nhap vao
 		if (argc == 3 && first_try)
 		{
 			//dang nhap tu cmd line
@@ -27,17 +27,17 @@ int main(int argc, char *arg[]) {
 			nhapUsernamePassword(input);
 		}
 
-		login_check = checkLogin(input, id_user);
+		login_check = checkLogin(input, id_user);	//kiem tra dang nhap
 
 		//dang nhap thanh cong
 		if (login_check)
 		{
 			//login_user : "Init.h"
-			getRecord(login_user, id_user, USER_DATA);
+			getRecord(login_user, id_user, USER_DATA);	//lay thong tin cua user
+
 			if (login_user.Active != BLOCKED)
-				//getUser(id_user, user);
 			{
-				runMenu(login_user);
+				runMenu(login_user);	//chay cac ham khoi tao menu theo user va xuat menu
 			}
 			else {
 				printf("Tai khoan cua ban da bi khoa! Vui long dang nhap bang tai khoan khac.\n");
@@ -46,8 +46,8 @@ int main(int argc, char *arg[]) {
 		else {
 			printf("Dang nhap that bai. Dang nhap lai!\n\n");
 		}
-	} while (1);// !login_check);
+	} while (1);
 
-	//save change: user, docgia, sach
+
 	return 0;
 }

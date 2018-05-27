@@ -6,16 +6,17 @@
 #include "Init.h"
 
 Sach sach;
-Record<BookName> book_name_record;
+Record<BookName> bookname_record;
 Record<ISBN> isbn_record;
 
-bool book_stop = false;
+bool book_cancel = false;	//huy chinh sua/ xoa sach
 
-void book_cancel() {
-	book_stop = true;
+void book_cancelfunction() {
+	book_cancel = true;
 }
 
 extern void runCustomMenu(const char *MSG, const char *label[], void(*func[])(), int n);
+
 
 void changeBookName() {
 	printf("Nhap ten sach:  ");
@@ -52,6 +53,7 @@ void changeSoLuongSach() {
 	scanf_s(" %d", &sach.SoLuong);
 }
 
+//Kiem tra 2 sach giong nhau
 bool checkBookFile(Sach &a,Sach &tmp)
 {
 	if (compareStringField(a.book_ISBN, tmp.book_ISBN) == 0)
@@ -103,8 +105,9 @@ void printBook(Sach &reader, int stt)
 	printf("\n");
 }
 
+//Ham xuat tat ca sach
 void printAllBooks() {
-
+	 
 	int result = printAllRecords(SACH, printBook);
 	if (result == 0)
 	{
@@ -129,11 +132,11 @@ void searchBookNameMsg() {
 	printf("Nhap ten sach can tim: ");
 }
 
+
 void notFoundBookMsg() {
 	printf("Khong tim thay sach!\n");
 
 }
-
 
 
 void searchBookbyISBN()
@@ -146,10 +149,11 @@ void searchBookbyISBN()
 	}
 }
 
+
 void searchBookbyName()
 {
 	if (searchObjectbyField<BookName, Sach>
-		(sach, SACH, book_name_record, TEN_SACH, searchBookNameMsg, inputStringField, notFoundBookMsg))
+		(sach, SACH, bookname_record, TEN_SACH, searchBookNameMsg, inputStringField, notFoundBookMsg))
 	{
 		printf("\nTim thay sach!\n\n");
 		XuatSach(sach);
@@ -157,7 +161,7 @@ void searchBookbyName()
 }
 
 
-
+//Ham lay gia tri cho 'sach', 'bookname_record' tu ISBN
 bool getBookbyISBN() {
 	if (!searchObjectbyField<ISBN, Sach>
 		(sach, SACH, isbn_record, ISBN_SACH, searchISBNmsg, inputStringField, notFoundBookMsg))
@@ -165,6 +169,7 @@ bool getBookbyISBN() {
 		return false;
 	}
 
+	//tim vi tri cua TenSach
 	int search_result = binarySearch<BookName, Record<BookName>>
 		(sach.TenSach, compareStringField<BookName>, TEN_SACH);
 	if (search_result == NOT_FOUND || search_result == FILE_NOT_FOUND)
@@ -172,19 +177,22 @@ bool getBookbyISBN() {
 		printf("Xay ra loi!\n");
 		return false;
 	}
-
-	getRecord(book_name_record, search_result, TEN_SACH);
+	
+	//ghi vao bookname_record
+	getRecord(bookname_record, search_result, TEN_SACH);
 	return true;
 }
 
+//Ham lay gia tri cho 'sach', 'isbn_record' tu ten sach
 bool getBookbyName()
 {
 	if (!searchObjectbyField<BookName, Sach>
-		(sach, SACH, book_name_record, TEN_SACH, searchBookNameMsg, inputStringField, notFoundBookMsg))
+		(sach, SACH, bookname_record, TEN_SACH, searchBookNameMsg, inputStringField, notFoundBookMsg))
 	{
 		return false;
 	}
 
+	//tim vi tri cua ISBN
 	int search_result = binarySearch<ISBN, Record<ISBN>>
 		(sach.book_ISBN, compareStringField<ISBN>, ISBN_SACH);
 	if (search_result == NOT_FOUND || search_result == FILE_NOT_FOUND)
@@ -193,22 +201,23 @@ bool getBookbyName()
 		return false;
 	}
 
+	//ghi vao isbn_record
 	getRecord(isbn_record, search_result, ISBN_SACH);
 	return true;
 }
 
 
-
+//cap nhat thong tin sach
 void updateBookInfo() {
 	//update
 	updateField(isbn_record, sach.book_ISBN, ISBN_SACH);
-	updateField(book_name_record, sach.TenSach, TEN_SACH);
-	editRecord(sach, book_name_record.index, SACH);
+	updateField(bookname_record, sach.TenSach, TEN_SACH);
+	editRecord(sach, bookname_record.index, SACH);
 
 }
 
 
-
+//Ham hien thi mennu chuc nang thay doi thong tin sach
 void changeBookInfo()
 {
 	system("cls");
@@ -217,15 +226,15 @@ void changeBookInfo()
 	const char *label[] = { "Thay doi ten sach", "Thay doi tac gia", "Thay doi nha xuat ban",
 		"Thay doi nam xuat ban", "Thay doi the loai", "Thay doi gia sach", "Thay doi so luong sach", "Huy chinh sua" };
 	void(*func[])() = { changeBookName, changeBookAuthor, changeNhaXuatBan,
-		changeNamXB, changeTheLoai, changeGiaSach, changeSoLuongSach, book_cancel };
+		changeNamXB, changeTheLoai, changeGiaSach, changeSoLuongSach, book_cancelfunction };
 
 	runCustomMenu(NULL, label, func, 8);
 
 	updateBookInfo();
 
-	if (book_stop)
+	if (book_cancel)
 	{
-		book_stop = false;
+		book_cancel = false;
 		return;
 	}
 	printf("\nChinh sua thong tin thanh cong!\n\n");
@@ -237,23 +246,24 @@ void changeBookInfo()
 
 }
 
+
 void deleteBook()
 {
 	XuatSach(sach);
 
 	const char *label[] = { "Dong y", "Huy" };
-	void(*func[])() = { NULLFunction, book_cancel };
+	void(*func[])() = { NULLFunction, book_cancelfunction };
 
 	runCustomMenu("Ban co chac chan muon xoa sach nay? \n", label, func, 2);
 
-	if (book_stop)
+	if (book_cancel)
 	{
-		book_stop = false;
+		book_cancel = false;
 		return;
 	}
 	//delete
 	deleteRecord(isbn_record, ISBN_SACH, checkIndexFile);
-	deleteRecord(book_name_record, TEN_SACH, checkIndexFile);
+	deleteRecord(bookname_record, TEN_SACH, checkIndexFile);
 	deleteRecord(sach, SACH, checkBookFile);
 
 	printf("Xoa thanh cong!\n");
@@ -293,7 +303,7 @@ void deleteBookbyName() {
 }
 
 
-
+//Ham them sach
 void addBook()
 {
 	int index = getNumberRecords<Sach>(SACH);

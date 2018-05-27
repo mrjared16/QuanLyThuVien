@@ -12,12 +12,14 @@
 
 #define NUMBER_OF_MENUS 41
 
+//so luong menu con toi da
 #define MAX_NODE 10
 
 void show(Menu *menu);
 
 
 //******NOTE****** : Chinh sua SO LUONG menu => nho thay doi so luong NUMBER_OF_MENUS
+//du lieu menu chuc nang cua chuong trinh
 DataMenu data[NUMBER_OF_MENUS] =
 {
 	{ "", "", NULL, MEMBER },
@@ -58,21 +60,22 @@ DataMenu data[NUMBER_OF_MENUS] =
 	{ "Lap phieu muon sach"	, "", MuonSach, MEMBER },
 	{ "Lap phieu tra sach"	, "", TraSach, MEMBER },
 	{ "Chuc nang thong ke"	, "", NULL, MEMBER },
-		{ "So luong sach trong thu vien"	, "Chuc nang thong ke", thongKeSach, MEMBER },
-		{ "So luong sach theo the loai "	, "Chuc nang thong ke", thongKeSachTheoTheLoai, MEMBER },
-		{ "So luong doc gia"				, "Chuc nang thong ke", thongKeDocGia, MEMBER },
-		{ "So luong doc gia theo gioi tinh"	, "Chuc nang thong ke", thongKeDocGiaTheoGioiTinh, MEMBER },
+		{ "So luong sach trong thu vien"	, "Chuc nang thong ke", thongKeSach, MODERATOR },
+		{ "So luong sach theo the loai "	, "Chuc nang thong ke", thongKeSachTheoTheLoai, MODERATOR },
+		{ "So luong doc gia"				, "Chuc nang thong ke", thongKeDocGia, MODERATOR },
+		{ "So luong doc gia theo gioi tinh"	, "Chuc nang thong ke", thongKeDocGiaTheoGioiTinh, MODERATOR },
 		{ "So luong sach dang duoc muon"	, "Chuc nang thong ke", thongKeSachDangMuon, MEMBER },
 		{ "Danh sach doc gia bi tre han"	, "Chuc nang thong ke", thongKeTreHan, MEMBER },
 };
 
+//Kiem tra xem co phai la main menu hay khong
 //Sau khi xay dung cay menu thi chi co parent cua MainMenu = NULL
 bool isMainMenu(Menu *menu)
 {
 	return (menu->parent == NULL);
 }
 
-//Thu thi menu
+//Thuc thi menu
 void execute(Menu *menu)
 {
 	system("cls");		//xoa man hinh
@@ -81,10 +84,9 @@ void execute(Menu *menu)
 
 	if (menu->data->enter != NULL)
 		menu->data->enter();
-	//else {
-		//Chua phai leaf => show chuc nang
+
 	show(menu);
-	//}
+	//show menu con
 
 	//Khong phai main menu => add nut back
 	if (!isMainMenu(menu))
@@ -135,7 +137,7 @@ bool isParent(DataMenu *parent, DataMenu &child)
 //Kiem tra xem User co quyen su dung chuc nang hien tai
 bool isAccessPermitted(DataMenu &require, User &user)
 {
-	return require.permission <= user.permission;
+	return (require.permission <= user.permission);
 }
 
 //Tim node co data = key
@@ -183,6 +185,10 @@ void nhanPhim(Menu *menu)
 	printf("> ");
 
 	//nhan cmd
+	//neu nguoi ko nhap vao cmd thi thoat chuong trinh. Co 3 truong hop
+	//- Ko nhap vao so
+	//- Nhap vao so 0 nhung khong phai la nut back (menu chinh ko co nut back)
+	//- Cmd nhap vao lon hon so chuc nang cua menu hien co
 	if (!scanf_s("%d", &cmd) || (isMainMenu(menu) && cmd == 0) || cmd > menu->n_of_children) {
 		exit(0);
 		return;
@@ -213,6 +219,7 @@ void nhanPhim(Menu *menu)
 	execute(menu_cmd);		//thuc thi
 	nhanPhim(menu_cmd);		//tiep tuc nhan phim
 }
+
 //Xoa cay menu = de quy tranh memory leaks
 void deleteMenus(Menu *menu)
 {
@@ -229,6 +236,7 @@ void deleteMenus(Menu *menu)
 	delete menu;
 }
 
+//hien thi menu con
 void show(Menu *menu)
 {
 	if (menu == NULL || menu->n_of_children == 0)
@@ -241,16 +249,19 @@ void show(Menu *menu)
 
 }
 
+//chay chuong trinh
 void runMenu(User &user)
 {
 	MainMenu main_menu;
 	getMenus(main_menu, user);
+
 	execute(main_menu.root);
 	nhanPhim(main_menu.root);
+
 	deleteMenus(main_menu.root);
 }
 
-
+//Hien thi menu custom tu label dc truyen vao 'label'
 void showCustomMenu(const char *MSG, const char *label[], int n)
 {
 	printf("\n");
@@ -262,6 +273,7 @@ void showCustomMenu(const char *MSG, const char *label[], int n)
 	}
 }
 
+//tuong tu ham nhan phim nhung cac chuc nang dc truyen vao 'func'
 void executeCustomMenu(void(*func[])(), int n)
 {
 	int cmd;
@@ -281,6 +293,7 @@ void executeCustomMenu(void(*func[])(), int n)
 	func[cmd - 1]();
 }
 
+//chay menu custom
 void runCustomMenu(const char *MSG, const char *label[], void(*func[])(), int n)
 {
 	showCustomMenu(MSG, label, n);
