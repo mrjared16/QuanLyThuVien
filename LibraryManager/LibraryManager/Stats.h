@@ -117,7 +117,7 @@ void thongKeTreHan() {
 	Time today;
 	now(today);
 	FILE *f;
-	fopen_s(&f, "PhieuMuonSach.bin", "rb");
+	fopen_s(&f, PHIEUMUON, "rb");
 	while (!feof(f)) {
 		fread(&t, sizeof(PhieuMuonSach), 1, f);
 		if (feof(f)) break;
