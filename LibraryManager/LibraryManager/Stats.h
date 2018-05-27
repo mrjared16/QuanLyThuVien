@@ -87,13 +87,12 @@ void thongKeDocGiaTheoGioiTinh()
 		return;
 	}
 
-	int gioitinh;
-	printf("Nhap gioi tinh can tim (1 = Nam, 0 = Nu):  ");
-	scanf_s("%d", &gioitinh);
-
+	int gioitinh = MALE;
 	int result = countRecord(&gioitinh, DOCGIA, matchGioiTinh);
 
-	printf("Thu vien dang co %d doc gia %s tren tong so %d doc gia.\n", result, gioitinh == MALE ? "nam" : "nu", n);
+	printf("Thu vien dang co %d doc gia:\n", n);
+	printf("Nam: %d\n", result);
+	printf("Nu:  %d\n", n - result);
 }
 
 void thongKeSachDangMuon() {
@@ -107,23 +106,24 @@ void thongKeSachDangMuon() {
 		if (feof(f)) break;
 		sum += t.soluong_sach;
 	}
+	fclose(f);
 	printf("So luong sach dang duoc muon la %d tren tong so %d sach trong thu vien.\n", sum, all);
 }
 
 void thongKeTreHan() {
 	PhieuMuonSach t;
-	int all = getNumberRecords<TheDocGia>(DOCGIA);
+	int all = getNumberRecords<PhieuMuonSach>(PHIEUMUON);
 	int sum = 0;
 	Time today;
 	now(today);
 	FILE *f;
 	fopen_s(&f, PHIEUMUON, "rb");
 	while (!feof(f)) {
-		fread(&t, sizeof(PhieuMuonSach), 1, f);
-		if (feof(f)) break;
-		if (soNgayQuaHan(today, t.NgayMuon) > 0)
-			sum++;
-		//if (KhoangCach2Time(t.NgayMuon, today) > 7) sum++;
+		if (fread(&t, sizeof(PhieuMuonSach), 1, f)) {
+			if (soNgayQuaHan(today, t.NgayMuon) > 0)
+				sum++;
+		}
 	}
-	printf("So doc gia dang bi tre han la %d tren tong so %d doc gia.\n", sum, all);
+	fclose(f);
+	printf("So doc gia dang bi tre han la %d tren tong so %d doc gia dang muon sach.\n", sum, all);
 }
