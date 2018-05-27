@@ -1,14 +1,15 @@
 #pragma once
-
+#pragma warning(disable:4996)
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "Init.h"
-#include "User.h"
 #include "DocGia.h"
-#include "Sach.h"
+#include "Functions.h"
+#include "Init.h"
 #include "Stats.h"
 #include "PhieuMuonTraSach.h"
+#include "Sach.h"
+#include "User.h"
 
 #define NUMBER_OF_MENUS 41
 
@@ -62,8 +63,8 @@ DataMenu data[NUMBER_OF_MENUS] =
 		{ "So luong sach theo the loai "	, "Chuc nang thong ke", thongKeSachTheoTheLoai, MEMBER },
 		{ "So luong doc gia"				, "Chuc nang thong ke", thongKeDocGia, MEMBER },
 		{ "So luong doc gia theo gioi tinh"	, "Chuc nang thong ke", thongKeDocGiaTheoGioiTinh, MEMBER },
-		{ "So luong sach dang duoc muon"	, "Chuc nang thong ke", NULL, MEMBER },
-		{ "Danh sach doc gia bi tre han"	, "Chuc nang thong ke", NULL, MEMBER },
+		{ "So luong sach dang duoc muon"	, "Chuc nang thong ke", thongKeSachDangMuon, MEMBER },
+		{ "Danh sach doc gia bi tre han"	, "Chuc nang thong ke", thongKeTreHan, MEMBER },
 };
 
 //Sau khi xay dung cay menu thi chi co parent cua MainMenu = NULL

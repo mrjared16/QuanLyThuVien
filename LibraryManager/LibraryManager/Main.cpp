@@ -31,7 +31,7 @@ int main(int argc, char *arg[]) {
 
 		//dang nhap thanh cong
 		if (login_check)
-		{	
+		{
 			//login_user : "Init.h"
 			getRecord(login_user, id_user, USER_DATA);
 			if (login_user.Active != BLOCKED)
