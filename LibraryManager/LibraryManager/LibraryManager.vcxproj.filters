@@ -49,10 +49,28 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="user.bin">
+    <None Include="res\user_data.bin">
       <Filter>Source Files</Filter>
     </None>
-    <None Include="user_data.bin">
+    <None Include="res\user.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\book.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\dsphieumuon.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\dsphieumuon_rid.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\dsphieutra.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\book_isbn.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\book_name.bin">
       <Filter>Source Files</Filter>
     </None>
     <None Include="res\docgia.bin">
@@ -62,6 +80,9 @@
       <Filter>Source Files</Filter>
     </None>
     <None Include="res\docgia_name.bin">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="res\docgia_id.bin">
       <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
