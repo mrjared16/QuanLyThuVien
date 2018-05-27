@@ -97,21 +97,21 @@ void thongKeDocGiaTheoGioiTinh()
 }
 
 void thongKeSachDangMuon() {
-	PhieuMuonTraSach t;
+	PhieuMuonSach t;
 	int all = getNumberRecords<Sach>(SACH);
 	int sum = 0;
 	FILE *f;
-	fopen_s(&f, "PhieuMuonSach.bin", "rb");
+	fopen_s(&f, PHIEUMUON, "rb");
 	while (!feof(f)) {
-		fread(&t, sizeof(PhieuMuonTraSach), 1, f);
+		fread(&t, sizeof(PhieuMuonSach), 1, f);
 		if (feof(f)) break;
-		sum += t.SoLuongSach;
+		sum += t.soluong_sach;
 	}
 	printf("So luong sach dang duoc muon la %d tren tong so %d sach trong thu vien.\n", sum, all);
 }
 
 void thongKeTreHan() {
-	PhieuMuonTraSach t;
+	PhieuMuonSach t;
 	int all = getNumberRecords<TheDocGia>(DOCGIA);
 	int sum = 0;
 	Time today;
@@ -119,9 +119,11 @@ void thongKeTreHan() {
 	FILE *f;
 	fopen_s(&f, "PhieuMuonSach.bin", "rb");
 	while (!feof(f)) {
-		fread(&t, sizeof(PhieuMuonTraSach), 1, f);
+		fread(&t, sizeof(PhieuMuonSach), 1, f);
 		if (feof(f)) break;
-		if (KhoangCach2Time(t.NgayMuon, today) > 7) sum++;
+		if (soNgayQuaHan(today, t.NgayMuon) > 0)
+			sum++;
+		//if (KhoangCach2Time(t.NgayMuon, today) > 7) sum++;
 	}
 	printf("So doc gia dang bi tre han la %d tren tong so %d doc gia.\n", sum, all);
 }

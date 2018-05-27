@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Init.h"
-
+#include "Sach.h"
 
 
 void XuatPhieuMuonSach(PhieuMuonSach &t) {
@@ -42,9 +42,9 @@ void print() {
 }
 
 
-int soNgayQuaHan(PhieuTraSach &tmp)
+int soNgayQuaHan(Time &ngay_tra, Time &ngay_muon)
 {
-	int songay_tre = timeDiff(tmp.NgayTraThucTe, tmp.phieu_muon.NgayMuon) - 7;
+	int songay_tre = timeDiff(ngay_tra, ngay_muon) - 7;
 	if (songay_tre <= 0)
 		return 0;
 	return songay_tre;
@@ -69,7 +69,7 @@ bool nhapPhieuTraSach(PhieuTraSach &phieu_tra)
 	printf("Nhap ngay tra: ");
 	NhapNgay(phieu_tra.NgayTraThucTe);
 
-	phieu_tra.tien_phat = soNgayQuaHan(phieu_tra) * PHAT_QUAHAN;
+	phieu_tra.tien_phat = soNgayQuaHan(phieu_tra.NgayTraThucTe, phieu_tra.phieu_muon.NgayMuon) * PHAT_QUAHAN;
 
 	phieu_tra.so_sach_bimat = 0;
 	phieu_tra.tien_phat += phieu_tra.so_sach_bimat * PHAT_MATSACH;
